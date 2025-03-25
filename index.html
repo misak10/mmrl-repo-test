@@ -3307,10 +3307,10 @@
             // 初始化Bootstrap模态框
             const changelogModal = new bootstrap.Modal(modalElement);
             
-            // 阻止历史版本按钮的父元素点击事件传播
+            // 阻止事件冒泡，确保点击更新日志按钮时不会触发其他操作
             document.addEventListener('click', function(e) {
                 const button = e.target.closest('.changelog-btn');
-                if (button && button.closest('.list-group-item')) {
+                if (button) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
@@ -3342,21 +3342,59 @@
                         });
                         
                         // 构造更新日志文件路径 (修正路径构建逻辑)
+                        // 正确处理模块名称，有些模块名可能包含斜杠或特殊字符
                         let modulePath = moduleName.toLowerCase();
+                        // 处理可能包含的斜杠
                         if (modulePath.includes('/')) {
                             modulePath = modulePath.split('/').pop();
                         }
                         
-                        // 确保版本号格式正确（去掉开头的v）
-                        let versionWithoutV = moduleVersion;
-                        if (versionWithoutV.startsWith('v')) {
-                            versionWithoutV = versionWithoutV.substring(1);
+                        // 确保版本号格式正确
+                        let versionForPath = moduleVersion;
+                        if (!versionForPath.startsWith('v')) {
+                            versionForPath = `v${versionForPath}`;
                         }
                         
-                        // 尝试几种可能的路径格式
+                        // 直接构建完整的文件路径 - 根据实际文件夹内容
+                        const directPath = `modules/${modulePath}/${versionForPath}_${versionCode}.md`;
+                        
+                        console.log('尝试直接加载路径:', directPath);
+                        
+                        try {
+                            // 直接尝试获取MD文件内容
+                            const response = await fetch(directPath);
+                            
+                            if (response.ok) {
+                                const markdown = await response.text();
+                                
+                                // 解析Markdown
+                                const html = parseMarkdown(markdown);
+                                
+                                // 更新模态框内容
+                                document.getElementById('changelogContent').innerHTML = html;
+                                
+                                console.log('成功加载更新日志:', directPath);
+                                
+                                // 如果是移动设备，调整滚动位置
+                                if (window.innerWidth < 768) {
+                                    setTimeout(() => {
+                                        document.getElementById('changelogContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }, 100);
+                                }
+                                
+                                return; // 成功加载，提前返回
+                            } else {
+                                console.warn(`直接路径加载失败 (${response.status}):`, directPath);
+                            }
+                        } catch (error) {
+                            console.error('直接加载更新日志出错:', error);
+                        }
+                        
+                        // 如果直接路径加载失败，尝试其他可能的路径格式
                         const possiblePaths = [
-                            `modules/${modulePath}/v${versionWithoutV}_${versionCode}.md`,
-                            `modules/${modulePath}/${moduleVersion}_${versionCode}.md`,
+                            `modules/${modulePath}/${versionForPath}_${versionCode}.md`, // v4.8.0_480.md
+                            `modules/${modulePath}/v${moduleVersion.replace(/^v/, '')}_${versionCode}.md`, // 确保有v前缀
+                            `modules/${modulePath}/${moduleVersion.replace(/^v/, '')}_${versionCode}.md`, // 确保没有v前缀
                             `modules/${modulePath}/changelog_${versionCode}.md`,
                             `modules/${modulePath}/changelog.md`
                         ];
@@ -3389,6 +3427,52 @@
                             }
                         }
                         
+                        if (!loaded) {
+                            // 尝试获取模块文件夹中的所有文件
+                            try {
+                                const moduleFolderPath = `modules/${modulePath}/`;
+                                const allFilesResponse = await fetch(`${moduleFolderPath}?list`);
+                                
+                                if (allFilesResponse.ok) {
+                                    const files = await allFilesResponse.json();
+                                    const mdFiles = files.filter(file => file.endsWith('.md'));
+                                    
+                                    console.log(`找到文件夹 ${moduleFolderPath} 中的 .md 文件:`, mdFiles);
+                                    
+                                    // 查找与版本号相关的md文件
+                                    const versionNumberOnly = moduleVersion.replace(/^v/, '');
+                                    const relevantMdFiles = mdFiles.filter(file => 
+                                        file.includes(versionNumberOnly) || 
+                                        file.includes(versionCode) ||
+                                        file.toLowerCase().includes('changelog') ||
+                                        file.toLowerCase().includes('release')
+                                    );
+                                    
+                                    if (relevantMdFiles.length > 0) {
+                                        const mdPath = `${moduleFolderPath}${relevantMdFiles[0]}`;
+                                        console.log('找到可能的更新日志文件:', mdPath);
+                                        
+                                        const mdResponse = await fetch(mdPath);
+                                        if (mdResponse.ok) {
+                                            const markdown = await mdResponse.text();
+                                            const html = parseMarkdown(markdown);
+                                            
+                                            document.getElementById('changelogContent').innerHTML = `
+                                                <div class="alert alert-success mb-3">
+                                                    找到更新日志文件: ${relevantMdFiles[0]}
+                                                </div>
+                                                ${html}
+                                            `;
+                                            
+                                            loaded = true;
+                                        }
+                                    }
+                                }
+                            } catch (err) {
+                                console.warn('尝试获取模块文件夹内容失败:', err);
+                            }
+                        }
+                    
                         if (!loaded) {
                             // 尝试加载一个通用的README或介绍文件
                             const readmePaths = [
@@ -3427,16 +3511,46 @@
                             
                             if (!readmeLoaded) {
                                 // 如果所有文件都无法加载，显示生成的信息
+                                
+                                // 尝试列出模块文件夹内的文件，帮助调试
+                                let folderContents = '';
+                                try {
+                                    const listResponse = await fetch(`modules/${modulePath}/filelist.json`);
+                                    if (listResponse.ok) {
+                                        const files = await listResponse.json();
+                                        folderContents = `
+                                            <div class="mt-3">
+                                                <p><strong>模块文件夹内容:</strong></p>
+                                                <ul>
+                                                    ${files.map(file => `<li>${file}</li>`).join('')}
+                                                </ul>
+                                            </div>
+                                        `;
+                                    }
+                                } catch(err) {
+                                    // 忽略错误
+                                    console.warn('无法获取文件列表:', err);
+                                }
+                                
                                 document.getElementById('changelogContent').innerHTML = `
                                     <div class="alert alert-info" role="alert">
                                         <h4 class="alert-heading">未找到更新日志</h4>
                                         <p>无法找到 ${moduleName} ${moduleVersion} 的更新日志。</p>
                                         <hr>
+                                        <div>
+                                            <p><strong>尝试的路径:</strong></p>
+                                            <ul>
+                                                <li>${directPath}</li>
+                                                ${possiblePaths.map(path => `<li>${path}</li>`).join('')}
+                                                ${readmePaths.map(path => `<li>${path}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                        ${folderContents}
                                         <p class="mb-0">您仍然可以通过下载按钮获取该模块的安装包。</p>
                                     </div>
                                     
                                     <div class="text-center mt-4">
-                                        <a href="modules/${modulePath}/v${versionWithoutV}_${versionCode}.zip" class="btn btn-primary">
+                                        <a href="modules/${modulePath}/${versionForPath}_${versionCode}.zip" class="btn btn-primary">
                                             <i class="ri-download-2-line me-1"></i> 下载 ${moduleVersion}
                                         </a>
                                         <a href="https://github.com/search?q=${encodeURIComponent(moduleName)}" target="_blank" class="btn btn-outline-secondary ms-2">
