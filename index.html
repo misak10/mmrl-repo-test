@@ -30,78 +30,72 @@
     
     <style>
         :root {
-            --bs-primary: #333333;
-            --bs-primary-rgb: 51, 51, 51;
-            --bs-secondary: #666666;
-            --bs-secondary-rgb: 102, 102, 102;
-            --bs-success: #4caf50;
-            --bs-info: #2196f3;
-            --bs-warning: #ffc107;
-            --bs-danger: #f44336;
-            --bs-dark: #212121;
-            --bs-dark-rgb: 33, 33, 33;
-            --bs-light: #f8f9fa;
-            --bs-light-rgb: 248, 249, 250;
-            --bs-body-bg: #f8f8f8;
-            --bs-body-color: #333333;
-            --bs-card-border-radius: 20px;
-            --bs-border-radius: 12px;
-            --bs-border-radius-sm: 8px;
-            --bs-border-radius-lg: 24px;
-            --bs-border-radius-xl: 32px;
-            --bs-border-radius-xxl: 40px;
+            --bs-primary: #18181b;
+            --bs-primary-rgb: 24, 24, 27;
+            --bs-secondary: #52525b;
+            --bs-secondary-rgb: 82, 82, 91;
+            --bs-success: #16a34a;
+            --bs-info: #0ea5e9;
+            --bs-warning: #eab308;
+            --bs-danger: #ef4444;
+            --bs-dark: #18181b;
+            --bs-dark-rgb: 24, 24, 27;
+            --bs-light: #f4f4f5;
+            --bs-light-rgb: 244, 244, 245;
+            --bs-body-bg: #fafafa;
+            --bs-body-color: #18181b;
+            --bs-card-border-radius: 1rem;
+            --bs-border-radius: 0.75rem;
+            --bs-border-radius-sm: 0.5rem;
+            --bs-border-radius-lg: 1rem;
+            --bs-border-radius-xl: 1.25rem;
             --bs-card-cap-bg: rgba(0, 0, 0, 0.03);
-            --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 2px 5px rgba(0, 0, 0, 0.03);
-            --card-hover-shadow: 0 20px 30px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.03);
-            --animation-duration: 0.5s;
-            --transition-base: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --header-height: 75px;
-            --backdrop-blur: 16px;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --card-hover-shadow: 0 12px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.03);
+            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 70px;
+            --backdrop-blur: 12px;
             --glass-bg: rgba(255, 255, 255, 0.8);
-            --glass-dark-bg: rgba(33, 33, 33, 0.85);
+            --glass-dark-bg: rgba(24, 24, 27, 0.85);
             --glass-border: 1px solid rgba(255, 255, 255, 0.12);
-            --accent-color: #555555;
-            --accent-rgb: 85, 85, 85;
-            --hover-color: #000000;
             --section-spacing: 2.5rem;
             --module-card-spacing: 2rem;
-            --text-truncate-fix: 0.1px; /* 修复文本截断问题 */
             
-            /* 添加活力色彩 */
-            --vibrant-purple: #7b68ee;
-            --vibrant-blue: #4361ee;
-            --vibrant-cyan: #4cc9f0;
-            --vibrant-teal: #0cce6b;
-            --vibrant-green: #2ecc71;
-            --vibrant-yellow: #ffd166;
-            --vibrant-orange: #ff9f1c;
-            --vibrant-red: #e63946;
-            --vibrant-pink: #f72585;
+            /* 活力色彩 */
+            --vibrant-purple: #8b5cf6;
+            --vibrant-purple-rgb: 139, 92, 246;
+            --vibrant-blue: #3b82f6;
+            --vibrant-blue-rgb: 59, 130, 246;
+            --vibrant-cyan: #06b6d4;
+            --vibrant-cyan-rgb: 6, 182, 212;
+            --vibrant-teal: #14b8a6;
+            --vibrant-green: #10b981;
+            --vibrant-yellow: #fbbf24;
+            --vibrant-orange: #f97316;
+            --vibrant-red: #ef4444;
+            --vibrant-pink: #ec4899;
             --vibrant-gradient: linear-gradient(45deg, var(--vibrant-purple), var(--vibrant-blue), var(--vibrant-cyan));
         }
 
         [data-bs-theme="dark"] {
-            --bs-body-bg: #101010;
-            --bs-body-color: #e6e6e6;
-            --bs-primary: #aaaaaa;
-            --bs-primary-rgb: 170, 170, 170;
-            --bs-secondary: #888888;
-            --bs-secondary-rgb: 136, 136, 136;
-            --bs-dark: #1a1a1a;
-            --bs-dark-rgb: 26, 26, 26;
-            --bs-light: #2a2a2a;
-            --bs-light-rgb: 42, 42, 42;
-            --bs-card-bg: #1a1a1a;
+            --bs-body-bg: #18181b;
+            --bs-body-color: #f4f4f5;
+            --bs-primary: #f4f4f5;
+            --bs-primary-rgb: 244, 244, 245;
+            --bs-secondary: #a1a1aa;
+            --bs-secondary-rgb: 161, 161, 170;
+            --bs-dark: #27272a;
+            --bs-dark-rgb: 39, 39, 42;
+            --bs-light: #3f3f46;
+            --bs-light-rgb: 63, 63, 70;
+            --bs-card-bg: #27272a;
             --bs-border-color: rgba(255, 255, 255, 0.08);
             --bs-card-cap-bg: rgba(255, 255, 255, 0.03);
-            --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 2px 5px rgba(0, 0, 0, 0.1);
-            --card-hover-shadow: 0 20px 30px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.15);
-            --glass-bg: rgba(26, 26, 26, 0.75);
-            --glass-dark-bg: rgba(16, 16, 16, 0.9);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --card-hover-shadow: 0 12px 24px rgba(0, 0, 0, 0.25), 0 6px 12px rgba(0, 0, 0, 0.15);
+            --glass-bg: rgba(39, 39, 42, 0.7);
+            --glass-dark-bg: rgba(24, 24, 27, 0.85);
             --glass-border: 1px solid rgba(255, 255, 255, 0.05);
-            --accent-color: #cccccc;
-            --accent-rgb: 204, 204, 204;
-            --hover-color: #ffffff;
         }
         
         /* 基础样式 */
@@ -162,14 +156,14 @@
         
         .navbar-brand img {
             filter: grayscale(100%);
-            transition: filter 0.5s ease, transform 0.5s ease;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             width: 36px;
             height: 36px;
         }
         
         .navbar-brand:hover img {
-            filter: grayscale(0%);
             transform: rotate(-10deg) scale(1.15);
+            filter: drop-shadow(0 0 8px rgba(var(--vibrant-blue-rgb), 0.5));
         }
         
         .nav-link {
@@ -468,12 +462,12 @@
         }
         
         .btn-download {
-            flex-grow: 1;
-            margin-right: 1rem;
             position: relative;
             overflow: hidden;
-            transition: all 0.5s ease;
             z-index: 1;
+            background: var(--vibrant-blue);
+            border-color: var(--vibrant-blue);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             padding: 0.6rem 1.5rem;
             font-weight: 600;
             letter-spacing: 0.02em;
@@ -483,24 +477,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--vibrant-blue);
-            border-color: var(--vibrant-blue);
         }
 
-        .btn-download::after {
+        .btn-download::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.2), rgba(255,255,255,0));
-            transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0), 
+                rgba(255, 255, 255, 0.2), 
+                rgba(255, 255, 255, 0)
+            );
             z-index: -1;
+            transition: left 0.8s ease;
         }
-        
-        .btn-download:hover::after {
+
+        .btn-download:hover::before {
             left: 100%;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(var(--vibrant-blue-rgb), 0.3);
         }
         
         .btn-download .download-size {
@@ -1385,9 +1386,318 @@
         .filter-group:focus-within::after {
             transform: scaleX(1);
         }
+
+        /* 新增图片和内容动画效果 */
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar-brand img {
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .navbar-brand:hover img {
+            transform: rotate(-10deg) scale(1.15);
+            filter: drop-shadow(0 0 8px rgba(var(--vibrant-blue-rgb), 0.5));
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .search-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .module-card {
+                border-radius: 1rem;
+            }
+            
+            .module-meta {
+                flex-wrap: wrap;
+                gap: 0.85rem;
+            }
+        }
+
+        /* 卡片内容动画 */
+        .module-card.show .module-description {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation-delay: calc(var(--animation-order, 0) * 0.05s + 0.2s);
+        }
+
+        .module-card.show .feature-tag {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation-delay: calc(var(--animation-order, 0) * 0.05s + 0.3s);
+        }
+        
+        /* 下拉菜单美化 */
+        .dropdown-menu {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--backdrop-blur));
+            -webkit-backdrop-filter: blur(var(--backdrop-blur));
+            border: var(--glass-border);
+            border-radius: var(--bs-border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        [data-bs-theme="dark"] .dropdown-menu {
+            background: var(--glass-dark-bg);
+        }
+
+        .dropdown-item {
+            padding: 0.6rem 1rem;
+            border-radius: var(--bs-border-radius-sm);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--bs-primary-rgb), 0.1);
+            transform: translateX(5px);
+        }
+
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(var(--bs-secondary-rgb), 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(var(--bs-secondary-rgb), 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(var(--bs-secondary-rgb), 0.3);
+        }
+        
+        /* 添加页面加载进度条 */
+        .loading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--vibrant-gradient);
+            z-index: 9999;
+            width: 0;
+            transition: width 0.2s ease;
+        }
+        
+        /* 模块卡片悬停效果增强 */
+        .module-card {
+            position: relative;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        box-shadow 0.3s ease, 
+                        border-color 0.3s ease;
+            will-change: transform, box-shadow;
+            overflow: hidden;
+        }
+        
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--vibrant-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            z-index: 2;
+        }
+        
+        .module-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .module-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .module-card:hover::after {
+            opacity: 1;
+        }
+        
+        [data-bs-theme="dark"] .module-card::after {
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.025) 100%);
+        }
+        
+        /* 标题动画效果 */
+        .module-list-header h2 {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+        
+        .module-list-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--vibrant-gradient);
+            border-radius: 3px;
+            transition: width 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .module-list-header:hover h2::after {
+            width: 100%;
+        }
+        
+        /* 搜索框焦点效果增强 */
+        .search-filters-card .form-control:focus, 
+        .search-filters-card .form-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(var(--vibrant-blue-rgb), 0.25);
+            border-color: var(--vibrant-blue);
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        [data-bs-theme="dark"] .search-filters-card .form-control:focus, 
+        [data-bs-theme="dark"] .search-filters-card .form-select:focus {
+            background-color: rgba(39, 39, 42, 0.9);
+        }
+
+        /* 更新日志模态框美化 */
+        .modal-content {
+            backdrop-filter: blur(var(--backdrop-blur));
+            -webkit-backdrop-filter: blur(var(--backdrop-blur));
+            background-color: var(--glass-bg);
+            border: var(--glass-border);
+        }
+        
+        [data-bs-theme="dark"] .modal-content {
+            background-color: var(--glass-dark-bg);
+        }
+        
+        .modal-header, .modal-footer {
+            border-color: rgba(var(--bs-secondary-rgb), 0.1);
+        }
+        
+        .changelog-content {
+            line-height: 1.8;
+        }
+        
+        .changelog-content h1, 
+        .changelog-content h2, 
+        .changelog-content h3 {
+            color: var(--vibrant-blue);
+        }
+
+        /* 流体动画背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(at 80% 10%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+                radial-gradient(at 20% 80%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.05) 0px, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+            animation: gradientShift 15s ease infinite alternate;
+        }
+
+        [data-bs-theme="dark"] body::before {
+            background-image: 
+                radial-gradient(at 80% 10%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 20% 80%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 0%;
+            }
+            100% {
+                background-position: 100% 100%;
+            }
+        }
+        
+        /* 首次加载的淡入动画 */
+        @keyframes fadeInPage {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        body {
+            animation: fadeInPage 0.5s ease-out;
+        }
+        
+        /* 悬浮卡片3D效果 */
+        .tilt-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .module-card {
+            backface-visibility: hidden;
+        }
+        
+        /* 加载按钮脉冲动画 */
+        @keyframes pulseButton {
+            0% { box-shadow: 0 0 0 0 rgba(var(--vibrant-blue-rgb), 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(var(--vibrant-blue-rgb), 0); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--vibrant-blue-rgb), 0); }
+        }
+        
+        #loadMoreBtn:not(:disabled) {
+            animation: pulseButton 2s infinite;
+        }
+        
+        /* 滚动提示器 */
+        .scroll-indicator {
+            position: fixed;
+            left: 0;
+            top: var(--header-height);
+            height: 3px;
+            background: var(--vibrant-gradient);
+            z-index: 1000;
+            width: 0;
+            transition: width 0.1s ease;
+        }
     </style>
 </head>
 <body>
+    <!-- 页面加载进度条 -->
+    <div class="loading-progress" id="loadingProgress"></div>
+    
+    <!-- 滚动指示器 -->
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+    
     <!-- 导航栏 -->
     <nav class="navbar navbar-expand-lg fixed-top border-bottom">
         <div class="container">
@@ -1582,7 +1892,53 @@
             initTheme();
             initUI();
             initModuleLoader();
+            initPageProgress();
         });
+        
+        // 初始化页面加载进度显示
+        function initPageProgress() {
+            const progressBar = document.getElementById('loadingProgress');
+            let width = 0;
+            
+            // 开始显示加载进度
+            const interval = setInterval(() => {
+                width += Math.random() * 10;
+                if (width > 90) {
+                    width = 90; // 最多加载到90%，等待实际内容加载完成
+                    clearInterval(interval);
+                }
+                progressBar.style.width = width + '%';
+            }, 100);
+            
+            // 页面完全加载后完成进度条
+            window.addEventListener('load', () => {
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    progressBar.style.opacity = '0';
+                }, 500);
+            });
+        }
+        
+        // 优化模块卡片动画
+        function animateModuleCards() {
+            const cards = document.querySelectorAll('.module-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '20px'
+            });
+            
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        }
         
         // 初始化主题
         function initTheme() {
@@ -1639,6 +1995,7 @@
             // 监听滚动事件，显示/隐藏顶部阴影和返回顶部按钮
             const contentShadow = document.getElementById('contentShadow');
             const scrollToTopBtn = document.getElementById('scrollToTop');
+            const scrollIndicator = document.getElementById('scrollIndicator');
             
             window.addEventListener('scroll', () => {
                 // 顶部阴影
@@ -1654,6 +2011,10 @@
                 } else {
                     scrollToTopBtn.classList.remove('show');
                 }
+                
+                // 更新滚动指示器
+                const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                scrollIndicator.style.width = `${scrollPercentage}%`;
                 
                 // 添加视差滚动效果
                 addParallaxEffect();
@@ -1702,8 +2063,53 @@
             
             // 初始化加载时添加视差效果
             addParallaxEffect();
+            
+            // 初始化卡片悬浮效果
+            initTiltEffect();
         }
-
+        
+        // 初始化卡片悬浮效果
+        function initTiltEffect() {
+            document.addEventListener('mousemove', function(e) {
+                const cards = document.querySelectorAll('.module-card');
+                
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const cardCenterX = rect.left + rect.width / 2;
+                    const cardCenterY = rect.top + rect.height / 2;
+                    
+                    // 检查鼠标是否在卡片附近
+                    const maxDistance = Math.max(rect.width, rect.height) * 1.5;
+                    const distance = Math.sqrt(
+                        Math.pow(e.clientX - cardCenterX, 2) + 
+                        Math.pow(e.clientY - cardCenterY, 2)
+                    );
+                    
+                    if (distance < maxDistance) {
+                        // 计算倾斜角度，距离越近效果越强
+                        const factor = 1 - distance / maxDistance;
+                        const maxTilt = 5; // 最大倾斜角度
+                        
+                        const tiltX = -((e.clientY - cardCenterY) / rect.height * maxTilt * factor);
+                        const tiltY = (e.clientX - cardCenterX) / rect.width * maxTilt * factor;
+                        
+                        // 应用3D变换
+                        card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    } else {
+                        card.style.transform = '';
+                    }
+                });
+            });
+            
+            // 鼠标离开页面时重置所有卡片
+            document.addEventListener('mouseleave', function() {
+                const cards = document.querySelectorAll('.module-card');
+                cards.forEach(card => {
+                    card.style.transform = '';
+                });
+            });
+        }
+        
         // 添加视差滚动效果
         function addParallaxEffect() {
             const cards = document.querySelectorAll('.module-card');
@@ -2042,15 +2448,8 @@
             moduleList.innerHTML = '';
             moduleList.appendChild(fragment);
             
-            // 使用延迟显示模块卡片
-            setTimeout(() => {
-                document.querySelectorAll('.module-card').forEach((card, index) => {
-                    // 添加渐进式动画延迟
-                    setTimeout(() => {
-                        card.classList.add('show');
-                    }, 50 + Math.min(index * 40, 800)); // 限制最大延迟时间，优化上移效果
-                });
-            }, 100);
+            // 使用IntersectionObserver优化卡片动画
+            animateModuleCards();
         }
         
         // 筛选模块
