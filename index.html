@@ -66,6 +66,18 @@
             --section-spacing: 2.5rem;
             --module-card-spacing: 2rem;
             --text-truncate-fix: 0.1px; /* 修复文本截断问题 */
+            
+            /* 添加活力色彩 */
+            --vibrant-purple: #7b68ee;
+            --vibrant-blue: #4361ee;
+            --vibrant-cyan: #4cc9f0;
+            --vibrant-teal: #0cce6b;
+            --vibrant-green: #2ecc71;
+            --vibrant-yellow: #ffd166;
+            --vibrant-orange: #ff9f1c;
+            --vibrant-red: #e63946;
+            --vibrant-pink: #f72585;
+            --vibrant-gradient: linear-gradient(45deg, var(--vibrant-purple), var(--vibrant-blue), var(--vibrant-cyan));
         }
 
         [data-bs-theme="dark"] {
@@ -291,7 +303,7 @@
         .module-card {
             opacity: 0;
             transform: translateY(30px);
-            transition: var(--transition-base);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: var(--card-shadow);
             height: 100%;
             border-radius: var(--bs-card-border-radius);
@@ -302,6 +314,7 @@
             border: 1px solid rgba(var(--bs-secondary-rgb), 0.08);
             background-color: var(--bs-light);
             transition-delay: calc(var(--animation-order, 0) * 0.05s);
+            will-change: transform, opacity, box-shadow;
         }
         
         [data-bs-theme="dark"] .module-card {
@@ -316,7 +329,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--bs-primary), var(--bs-secondary));
+            background: var(--vibrant-gradient);
             opacity: 0;
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1;
@@ -333,7 +346,7 @@
         
         .module-card:hover {
             box-shadow: var(--card-hover-shadow);
-            transform: translateY(-8px) scale(1.01);
+            transform: translateY(-8px);
             border-color: rgba(var(--bs-secondary-rgb), 0.2);
         }
         
@@ -470,6 +483,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background-color: var(--vibrant-blue);
+            border-color: var(--vibrant-blue);
         }
 
         .btn-download::after {
@@ -499,22 +514,31 @@
             margin-top: 0.75rem;
             font-size: 0.85rem;
             color: var(--bs-secondary);
-            padding: 0.35rem 0.5rem;
+            padding: 0.55rem 0.75rem;
             background-color: rgba(var(--bs-secondary-rgb), 0.08);
-            border-radius: var(--bs-border-radius-sm);
+            border-radius: var(--bs-border-radius);
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .history-version-hint:hover {
-            background-color: rgba(var(--bs-secondary-rgb), 0.15);
-            color: var(--hover-color);
+            background-color: rgba(var(--vibrant-blue-rgb), 0.15);
+            color: var(--vibrant-blue);
+            transform: translateY(-2px);
         }
         
         .history-version-hint i {
             margin-right: 0.35rem;
             font-size: 0.8rem;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .history-version-hint:hover i {
+            transform: rotate(180deg);
         }
         
         .btn-icon-group {
@@ -550,7 +574,7 @@
             z-index: 2;
             font-size: 0.7rem;
             padding: 0.4rem 0.9rem;
-            background-color: #4caf50;
+            background-color: var(--vibrant-green);
             color: white;
             border-radius: 50rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -562,7 +586,7 @@
         
         .module-card:hover .badge-new {
             transform: translateY(-5px) scale(1.1);
-            background-color: #2e7d32;
+            background-color: #2ecc71;
         }
         
         .badge-outdated {
@@ -572,7 +596,7 @@
             z-index: 2;
             font-size: 0.7rem;
             padding: 0.4rem 0.9rem;
-            background-color: #f44336;
+            background-color: var(--vibrant-red);
             color: white;
             border-radius: 50rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -592,11 +616,44 @@
             margin-bottom: 0.85rem;
             transition: var(--transition-base);
             background-color: rgba(var(--bs-secondary-rgb), 0.03);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .version-history-item:hover {
             background-color: rgba(var(--bs-secondary-rgb), 0.08);
             transform: translateX(8px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .version-history-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--vibrant-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .version-history-item:hover::before {
+            opacity: 1;
+        }
+        
+        .version-history {
+            padding: 0.5rem;
+            background-color: rgba(var(--bs-light-rgb), 0.5);
+            border-radius: var(--bs-border-radius);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        [data-bs-theme="dark"] .version-history {
+            background-color: rgba(0, 0, 0, 0.2);
         }
         
         /* 搜索和筛选区 */
@@ -617,7 +674,7 @@
         }
         
         .search-filters-card:hover {
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
             transform: translateY(-5px);
         }
         
@@ -629,11 +686,29 @@
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
+            position: relative;
+            padding-left: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-image: var(--vibrant-gradient) 1;
+            border-bottom: 2px solid;
+        }
+        
+        .search-filters-card .card-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--vibrant-gradient);
+            border-radius: 2px;
         }
         
         .search-filters-card .card-title i {
             margin-right: 0.5rem;
             transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: var(--vibrant-blue);
         }
         
         .search-filters-card:hover .card-title i {
@@ -643,18 +718,20 @@
         .input-group-text {
             border: none;
             background-color: transparent;
-            color: var(--bs-secondary);
+            color: var(--vibrant-blue);
             font-size: 1.1rem;
         }
         
         .form-control, .form-select {
             border-color: rgba(var(--bs-secondary-rgb), 0.15);
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
             background-color: rgba(var(--bs-light-rgb), 0.5);
             padding: 0.75rem 1rem;
             font-size: 0.95rem;
-            border-radius: var(--bs-border-radius);
+            border-radius: var(--bs-border-radius-lg);
             box-shadow: 0 0 0 0 rgba(var(--bs-secondary-rgb), 0);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         
         [data-bs-theme="dark"] .form-control, 
@@ -664,9 +741,34 @@
         }
         
         .form-control:focus, .form-select:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 0.25rem rgba(var(--bs-secondary-rgb), 0.15);
+            border-color: var(--vibrant-blue);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
             transform: translateY(-2px);
+        }
+        
+        /* 筛选项目样式 */
+        .filter-option-item {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: var(--bs-border-radius-lg);
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        [data-bs-theme="dark"] .filter-option-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .filter-option-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        [data-bs-theme="dark"] .filter-option-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
         /* 加载状态 */
@@ -1038,7 +1140,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background-color: var(--bs-secondary);
+            background: var(--vibrant-gradient);
             color: white;
             display: flex;
             align-items: center;
@@ -1047,7 +1149,7 @@
             visibility: hidden;
             transform: translateY(20px);
             transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             z-index: 1000;
         }
@@ -1059,8 +1161,7 @@
         }
         
         .scroll-to-top:hover {
-            background-color: var(--accent-color);
-            transform: translateY(-5px);
+            transform: translateY(-5px) scale(1.1);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         }
         
@@ -1242,6 +1343,48 @@
                 padding: 0.5rem;
             }
         }
+        
+        /* 搜索和筛选区动效 */
+        .filter-group {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--bs-border-radius-lg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-bs-theme="dark"] .filter-group {
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-group:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        [data-bs-theme="dark"] .filter-group:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .filter-group::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--vibrant-gradient);
+            transform: scaleX(0);
+            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transform-origin: center;
+        }
+        
+        .filter-group:hover::after,
+        .filter-group:focus-within::after {
+            transform: scaleX(1);
+        }
     </style>
 </head>
 <body>
@@ -1287,12 +1430,12 @@
             <div class="card shadow-sm search-filters-card">
                 <div class="card-body p-4">
                     <h5 class="card-title mb-3 d-flex align-items-center">
-                        <i class="ri-filter-3-line me-2 text-secondary"></i>
+                        <i class="ri-filter-3-line me-2"></i>
                         <span>搜索与筛选</span>
                     </h5>
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
-                            <div class="input-group">
+                            <div class="input-group filter-group">
                                 <span class="input-group-text"><i class="ri-search-line"></i></span>
                                 <input type="text" id="moduleSearch" class="form-control" placeholder="搜索模块名称或描述...">
                             </div>
@@ -1300,15 +1443,22 @@
                         <div class="col-12 col-md-6">
                             <div class="row g-2">
                                 <div class="col-md-4 col-6">
-                                    <div class="input-group">
+                                    <div class="input-group filter-group">
                                         <span class="input-group-text"><i class="ri-folder-line"></i></span>
                                         <select id="categoryFilter" class="form-select">
                                             <option value="">全部分类</option>
+                                            <option value="系统工具">系统工具</option>
+                                            <option value="安全增强">安全增强</option>
+                                            <option value="网络工具">网络工具</option>
+                                            <option value="实用工具">实用工具</option>
+                                            <option value="脚本工具">脚本工具</option>
+                                            <option value="性能优化">性能优化</option>
+                                            <option value="主题美化">主题美化</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-6">
-                                    <div class="input-group">
+                                    <div class="input-group filter-group">
                                         <span class="input-group-text"><i class="ri-sort-asc"></i></span>
                                         <select id="sortOrder" class="form-select">
                                             <option value="newest">最新更新</option>
@@ -1319,7 +1469,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-12">
-                                    <div class="input-group">
+                                    <div class="input-group filter-group">
                                         <span class="input-group-text"><i class="ri-function-line"></i></span>
                                         <select id="featureFilter" class="form-select">
                                             <option value="">全部功能</option>
@@ -1504,6 +1654,9 @@
                 } else {
                     scrollToTopBtn.classList.remove('show');
                 }
+                
+                // 添加视差滚动效果
+                addParallaxEffect();
             });
             
             // 返回顶部按钮点击事件
@@ -1546,6 +1699,28 @@
                     optimizeMobileFilters();
                 }
             }, 250));
+            
+            // 初始化加载时添加视差效果
+            addParallaxEffect();
+        }
+
+        // 添加视差滚动效果
+        function addParallaxEffect() {
+            const cards = document.querySelectorAll('.module-card');
+            const scrollY = window.scrollY;
+            
+            cards.forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                const isVisible = (rect.top < window.innerHeight && rect.bottom > 0);
+                
+                if (isVisible) {
+                    const scrollFactor = 0.03;
+                    const translateY = Math.max(0, (window.innerHeight - rect.top) * scrollFactor);
+                    const scale = 1 + (translateY * 0.0005);
+                    
+                    card.style.transform = `translateY(${-translateY}px) scale(${scale})`;
+                }
+            });
         }
         
         // 优化移动端筛选体验
@@ -1814,17 +1989,6 @@
                                        data-version-code="${module.sortedVersions[0].versionCode}">
                                         <i class="ri-file-list-3-line"></i>
                                     </button>
-                                    
-                                    ${module.sortedVersions.length > 1 ? `
-                                        <button class="btn btn-outline-secondary btn-sm" 
-                                                type="button" 
-                                                data-bs-toggle="collapse" 
-                                                data-bs-target="#version-${index}" 
-                                                aria-expanded="false"
-                                                title="查看历史版本">
-                                            <i class="ri-history-line"></i>
-                                        </button>
-                                    ` : ''}
                                 </div>
                             </div>
 
@@ -1884,7 +2048,7 @@
                     // 添加渐进式动画延迟
                     setTimeout(() => {
                         card.classList.add('show');
-                    }, 50 + Math.min(index * 50, 1000)); // 限制最大延迟时间
+                    }, 50 + Math.min(index * 40, 800)); // 限制最大延迟时间，优化上移效果
                 });
             }, 100);
         }
