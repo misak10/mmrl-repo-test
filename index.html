@@ -299,13 +299,14 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            border: none;
+            border: 1px solid rgba(var(--bs-secondary-rgb), 0.08);
             background-color: var(--bs-light);
-            transition-delay: calc(var(--animation-order, 0) * 0.1s);
+            transition-delay: calc(var(--animation-order, 0) * 0.05s);
         }
         
         [data-bs-theme="dark"] .module-card {
             background-color: var(--bs-card-bg);
+            border-color: rgba(255, 255, 255, 0.05);
         }
         
         .module-card::before {
@@ -314,17 +315,15 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, transparent, var(--bs-secondary), transparent);
-            transform: scaleX(0);
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            transform-origin: center;
-            opacity: 0.8;
+            height: 4px;
+            background: linear-gradient(90deg, var(--bs-primary), var(--bs-secondary));
+            opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1;
         }
         
         .module-card:hover::before {
-            transform: scaleX(1);
+            opacity: 1;
         }
         
         .module-card.show {
@@ -334,7 +333,8 @@
         
         .module-card:hover {
             box-shadow: var(--card-hover-shadow);
-            transform: translateY(-12px);
+            transform: translateY(-8px) scale(1.01);
+            border-color: rgba(var(--bs-secondary-rgb), 0.2);
         }
         
         /* 卡片内容 */
@@ -359,6 +359,7 @@
             transition: color 0.5s ease;
             letter-spacing: -0.02em;
             line-height: 1.4;
+            padding-right: 60px; /* 为标签留出空间 */
         }
         
         .module-card:hover .module-title {
@@ -465,6 +466,10 @@
             letter-spacing: 0.02em;
             font-size: 0.95rem;
             border-radius: var(--bs-border-radius);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-download::after {
@@ -481,6 +486,35 @@
         
         .btn-download:hover::after {
             left: 100%;
+        }
+        
+        .btn-download .download-size {
+            margin-left: 0.5rem;
+            opacity: 0.8;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .history-version-hint {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--bs-secondary);
+            padding: 0.35rem 0.5rem;
+            background-color: rgba(var(--bs-secondary-rgb), 0.08);
+            border-radius: var(--bs-border-radius-sm);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .history-version-hint:hover {
+            background-color: rgba(var(--bs-secondary-rgb), 0.15);
+            color: var(--hover-color);
+        }
+        
+        .history-version-hint i {
+            margin-right: 0.35rem;
+            font-size: 0.8rem;
         }
         
         .btn-icon-group {
@@ -511,12 +545,12 @@
         /* 角标样式 */
         .badge-new {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 1;
-            font-size: 0.75rem;
+            top: 1.25rem;
+            right: 1.25rem;
+            z-index: 2;
+            font-size: 0.7rem;
             padding: 0.4rem 0.9rem;
-            background-color: var(--bs-secondary);
+            background-color: #4caf50;
             color: white;
             border-radius: 50rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -528,22 +562,17 @@
         
         .module-card:hover .badge-new {
             transform: translateY(-5px) scale(1.1);
-            background-color: #000000;
-        }
-        
-        [data-bs-theme="dark"] .module-card:hover .badge-new {
-            background-color: #ffffff;
-            color: #000000;
+            background-color: #2e7d32;
         }
         
         .badge-outdated {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 1;
-            font-size: 0.75rem;
+            top: 1.25rem;
+            right: 1.25rem;
+            z-index: 2;
+            font-size: 0.7rem;
             padding: 0.4rem 0.9rem;
-            background-color: rgba(var(--bs-secondary-rgb), 0.7);
+            background-color: #f44336;
             color: white;
             border-radius: 50rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -554,7 +583,7 @@
         
         .module-card:hover .badge-outdated {
             transform: translateY(-5px);
-            background-color: rgba(var(--bs-secondary-rgb), 0.9);
+            background-color: #d32f2f;
         }
         
         /* 历史版本样式 */
@@ -576,10 +605,11 @@
             -webkit-backdrop-filter: blur(var(--backdrop-blur));
             background-color: var(--glass-bg);
             border: var(--glass-border);
-            transition: var(--transition-base);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             border-radius: var(--bs-card-border-radius);
             box-shadow: var(--card-shadow);
             overflow: hidden;
+            transform: translateY(0);
         }
         
         [data-bs-theme="dark"] .search-filters-card {
@@ -587,7 +617,8 @@
         }
         
         .search-filters-card:hover {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
         }
         
         .search-filters-card .card-title {
@@ -596,6 +627,17 @@
             letter-spacing: -0.02em;
             font-size: 1.3rem;
             margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-filters-card .card-title i {
+            margin-right: 0.5rem;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .search-filters-card:hover .card-title i {
+            transform: rotate(180deg);
         }
         
         .input-group-text {
@@ -612,6 +654,7 @@
             padding: 0.75rem 1rem;
             font-size: 0.95rem;
             border-radius: var(--bs-border-radius);
+            box-shadow: 0 0 0 0 rgba(var(--bs-secondary-rgb), 0);
         }
         
         [data-bs-theme="dark"] .form-control, 
@@ -623,6 +666,7 @@
         .form-control:focus, .form-select:focus {
             border-color: var(--accent-color);
             box-shadow: 0 0 0 0.25rem rgba(var(--bs-secondary-rgb), 0.15);
+            transform: translateY(-2px);
         }
         
         /* 加载状态 */
@@ -952,6 +996,91 @@
             left: 100%;
         }
         
+        /* 按钮加载动画 */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .btn-loading::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: inherit;
+            opacity: 0.6;
+            border-radius: inherit;
+            z-index: 1;
+        }
+        
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1rem;
+            height: 1rem;
+            margin: -0.5rem 0 0 -0.5rem;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-right-color: transparent;
+            animation: spin 0.75s linear infinite;
+            z-index: 2;
+        }
+        
+        /* 滚动到顶部按钮 */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--bs-secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .scroll-to-top:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 筛选提示动画 */
+        #filteringIndicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background-color: rgba(var(--bs-secondary-rgb), 0.05);
+            border-radius: var(--bs-border-radius);
+            margin-bottom: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         /* 添加响应式调整 */
         @media (max-width: 991.98px) {
             :root {
@@ -993,6 +1122,10 @@
                 width: 38px;
                 height: 38px;
                 font-size: 0.9rem;
+            }
+            
+            .search-filters-card .row.g-3 {
+                row-gap: 0.75rem !important;
             }
         }
         
@@ -1044,6 +1177,15 @@
             .card-footer {
                 padding: 1.25rem;
             }
+            
+            .search-filters-card .col-4 {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            .search-filters-card .row.g-2 {
+                row-gap: 0.5rem !important;
+            }
         }
         
         @media (max-width: 575.98px) {
@@ -1063,13 +1205,13 @@
             }
             
             .action-group {
-                flex-wrap: wrap;
+                flex-direction: column;
             }
             
             .btn-download {
                 width: 100%;
                 margin-right: 0;
-                margin-bottom: 1rem;
+                margin-bottom: 0.75rem;
                 padding: 0.7rem 1rem;
             }
             
@@ -1094,6 +1236,10 @@
             
             .empty-state p {
                 font-size: 0.95rem;
+            }
+            
+            .history-version-hint {
+                padding: 0.5rem;
             }
         }
     </style>
@@ -1153,7 +1299,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="row g-2">
-                                <div class="col-4">
+                                <div class="col-md-4 col-6">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-folder-line"></i></span>
                                         <select id="categoryFilter" class="form-select">
@@ -1161,7 +1307,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-md-4 col-6">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-sort-asc"></i></span>
                                         <select id="sortOrder" class="form-select">
@@ -1172,7 +1318,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-md-4 col-12">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-function-line"></i></span>
                                         <select id="featureFilter" class="form-select">
@@ -1236,6 +1382,11 @@
         </section>
     </main>
 
+    <!-- 返回顶部按钮 -->
+    <div class="scroll-to-top" id="scrollToTop">
+        <i class="ri-arrow-up-line"></i>
+    </div>
+    
     <!-- 更新日志模态框 -->
     <div class="modal fade" id="changelogModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -1335,14 +1486,32 @@
         
         // 初始化UI交互
         function initUI() {
-            // 监听滚动事件，显示/隐藏顶部阴影
+            // 监听滚动事件，显示/隐藏顶部阴影和返回顶部按钮
             const contentShadow = document.getElementById('contentShadow');
+            const scrollToTopBtn = document.getElementById('scrollToTop');
+            
             window.addEventListener('scroll', () => {
+                // 顶部阴影
                 if (window.scrollY > 10) {
                     contentShadow.style.opacity = '1';
                 } else {
                     contentShadow.style.opacity = '0';
                 }
+                
+                // 返回顶部按钮
+                if (window.scrollY > 300) {
+                    scrollToTopBtn.classList.add('show');
+                } else {
+                    scrollToTopBtn.classList.remove('show');
+                }
+            });
+            
+            // 返回顶部按钮点击事件
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             });
             
             // 清除筛选按钮事件
@@ -1354,6 +1523,80 @@
                     document.getElementById('sortOrder').value = 'newest';
                     document.getElementById('featureFilter').value = '';
                     filterModules();
+
+                    // 添加清除筛选器的动画效果
+                    clearFiltersBtn.classList.add('btn-loading');
+                    setTimeout(() => {
+                        clearFiltersBtn.classList.remove('btn-loading');
+                    }, 800);
+                    
+                    // 滚动到模块列表顶部
+                    scrollToModuleList();
+                });
+            }
+            
+            // 移动端筛选优化
+            if (window.innerWidth <= 768) {
+                optimizeMobileFilters();
+            }
+            
+            // 监听窗口大小变化，优化移动端体验
+            window.addEventListener('resize', debounce(() => {
+                if (window.innerWidth <= 768) {
+                    optimizeMobileFilters();
+                }
+            }, 250));
+        }
+        
+        // 优化移动端筛选体验
+        function optimizeMobileFilters() {
+            // 在移动端优化筛选项布局
+            const searchFiltersCard = document.querySelector('.search-filters-card');
+            if (searchFiltersCard && !searchFiltersCard.hasAttribute('data-mobile-optimized')) {
+                searchFiltersCard.setAttribute('data-mobile-optimized', 'true');
+                
+                // 添加筛选面板折叠切换功能
+                const cardTitle = searchFiltersCard.querySelector('.card-title');
+                const filterContent = searchFiltersCard.querySelector('.row.g-3');
+                
+                if (cardTitle && filterContent) {
+                    cardTitle.style.cursor = 'pointer';
+                    cardTitle.innerHTML += ' <i class="ri-arrow-down-s-line ms-auto"></i>';
+                    
+                    // 默认展开筛选
+                    filterContent.style.display = 'flex';
+                    
+                    cardTitle.addEventListener('click', () => {
+                        if (filterContent.style.display === 'none') {
+                            filterContent.style.display = 'flex';
+                            filterContent.style.opacity = '0';
+                            
+                            // 添加展开动画
+                            setTimeout(() => {
+                                filterContent.style.opacity = '1';
+                                cardTitle.querySelector('i.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
+                            }, 10);
+                        } else {
+                            filterContent.style.opacity = '0';
+                            cardTitle.querySelector('i.ri-arrow-down-s-line').style.transform = 'rotate(-180deg)';
+                            
+                            // 添加收起动画
+                            setTimeout(() => {
+                                filterContent.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                }
+            }
+        }
+        
+        // 滚动到模块列表顶部
+        function scrollToModuleList() {
+            const moduleList = document.getElementById('moduleList');
+            if (moduleList) {
+                window.scrollTo({
+                    top: moduleList.offsetTop - 100,
+                    behavior: 'smooth'
                 });
             }
         }
@@ -1549,9 +1792,9 @@
 
                         <div class="card-footer">
                             <div class="action-group">
-                                <a href="${module.sortedVersions[0].zipUrl}" class="btn btn-secondary btn-sm btn-download">
+                                <a href="${module.sortedVersions[0].zipUrl}" class="btn btn-secondary btn-download">
                                     <i class="ri-download-2-line me-2"></i> 下载
-                                    ${module.sortedVersions[0].size ? `<small class="ms-1">${formatSize(module.sortedVersions[0].size)}</small>` : ''}
+                                    ${module.sortedVersions[0].size ? `<span class="download-size">${formatSize(module.sortedVersions[0].size)}</span>` : ''}
                                 </a>
                                 
                                 <div class="btn-icon-group">
@@ -1584,11 +1827,13 @@
                                     ` : ''}
                                 </div>
                             </div>
-                            
+
                             ${module.sortedVersions.length > 1 ? `
+                                <div class="history-version-hint" data-bs-toggle="collapse" data-bs-target="#version-${index}">
+                                    <i class="ri-arrow-down-s-line"></i>查看历史版本 (${module.sortedVersions.length - 1})
+                                </div>
                                 <div class="collapse mt-3" id="version-${index}">
                                     <div class="version-history">
-                                        <div class="small mb-2 text-muted fw-medium">历史版本 (${module.sortedVersions.length - 1})</div>
                                         ${module.sortedVersions
                                             .slice(1)
                                             .map(ver => {
@@ -1639,7 +1884,7 @@
                     // 添加渐进式动画延迟
                     setTimeout(() => {
                         card.classList.add('show');
-                    }, index * 80);
+                    }, 50 + Math.min(index * 50, 1000)); // 限制最大延迟时间
                 });
             }, 100);
         }
@@ -1652,6 +1897,9 @@
             const categoryValue = document.getElementById('categoryFilter').value;
             const sortValue = document.getElementById('sortOrder').value;
             const featureValue = document.getElementById('featureFilter').value;
+            
+            // 添加筛选提示和加载动画
+            showFilteringIndicator();
             
             // 筛选
             let filtered = window.currentModules.filter(module => {
@@ -1690,15 +1938,50 @@
                 });
             }
             
-            // 更新模块计数
-            updateModuleCount(filtered.length);
-            
-            // 显示筛选结果
-            if (filtered.length === 0) {
-                showEmptyState();
-            } else {
-                hideEmptyState();
-                renderModules(filtered);
+            // 延迟一小段时间显示筛选结果，让用户感受到过滤过程
+            setTimeout(() => {
+                // 更新模块计数
+                updateModuleCount(filtered.length);
+                
+                // 显示筛选结果
+                if (filtered.length === 0) {
+                    showEmptyState();
+                } else {
+                    hideEmptyState();
+                    renderModules(filtered);
+                }
+                
+                // 隐藏筛选提示
+                hideFilteringIndicator();
+            }, 300);
+        }
+        
+        // 显示筛选指示器
+        function showFilteringIndicator() {
+            // 检查是否已经存在筛选提示
+            if (!document.getElementById('filteringIndicator')) {
+                const moduleList = document.getElementById('moduleList');
+                const indicator = document.createElement('div');
+                indicator.id = 'filteringIndicator';
+                indicator.className = 'text-center py-3';
+                indicator.innerHTML = `
+                    <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>
+                    <span>正在筛选模块...</span>
+                `;
+                
+                if (moduleList.firstChild) {
+                    moduleList.insertBefore(indicator, moduleList.firstChild);
+                } else {
+                    moduleList.appendChild(indicator);
+                }
+            }
+        }
+        
+        // 隐藏筛选指示器
+        function hideFilteringIndicator() {
+            const indicator = document.getElementById('filteringIndicator');
+            if (indicator) {
+                indicator.remove();
             }
         }
         
