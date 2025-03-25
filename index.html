@@ -2422,6 +2422,397 @@
                 transform: translateZ(0);
             }
         }
+
+        /* 修复分类点击卡顿问题 */
+        .dropdown-item {
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            cursor: pointer;
+        }
+        
+        .dropdown-item:active {
+            transform: scale(0.98);
+            transition: transform 0.1s ease;
+        }
+        
+        /* 优化下拉菜单性能 */
+        .dropdown-toggle {
+            transition: none !important;
+            will-change: auto !important;
+        }
+        
+        .dropdown-menu {
+            border-radius: var(--radius) !important;
+            transform-origin: top center !important; 
+            transition: opacity 0.15s ease, transform 0.15s ease !important;
+            margin-top: 0.25rem !important;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* 自定义下拉菜单触发器 */
+        .custom-dropdown-toggle {
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        /* 修复Bootstrap下拉菜单闪烁问题 */
+        .dropdown-menu.fade {
+            display: block;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+        }
+        
+        .dropdown-menu.fade.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* 提高模态框z-index以避免被其他元素遮挡 */
+        .modal {
+            z-index: 9999 !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 9990 !important;
+        }
+        
+        /* 修复模态框关闭按钮 */
+        .modal .btn-close {
+            background: var(--input-bg) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            opacity: 0.7;
+            padding: 0.75rem;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            border: 1px solid var(--input-border);
+            width: 2rem;
+            height: 2rem;
+            margin: 0;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            z-index: 30;
+        }
+        
+        .modal .btn-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+            background-color: var(--primary);
+        }
+        
+        /* 移动端模态框优化 */
+        @media (max-width: 768px) {
+            /* 底部抽屉式模态框 */
+            .changelog-modal .modal-dialog {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: auto;
+                margin: 0;
+                max-width: 100%;
+                transform: translate(0, 100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .changelog-modal.show .modal-dialog {
+                transform: translate(0, 0);
+            }
+            
+            .changelog-modal .modal-content {
+                border-radius: var(--radius) var(--radius) 0 0;
+                border-bottom: none;
+                max-height: 80vh;
+                overflow: hidden;
+            }
+            
+            /* 更大更友好的关闭按钮 */
+            .changelog-modal .modal-header {
+                position: relative;
+                padding-top: 1.5rem;
+                border-bottom-color: var(--input-border);
+            }
+            
+            .changelog-modal .btn-close {
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+                width: 2.5rem;
+                height: 2.5rem;
+                margin: 0;
+                padding: 0;
+                background-size: 1.25rem;
+                opacity: 0.9;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                touch-action: manipulation;
+                -webkit-touch-callout: none;
+            }
+            
+            /* 添加向下拖动指示器 */
+            .changelog-modal .modal-header::before {
+                content: '';
+                position: absolute;
+                top: 0.5rem;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 3.5rem;
+                height: 0.25rem;
+                background: var(--input-border);
+                border-radius: 1rem;
+            }
+            
+            /* 版本导航按钮更大更易触碰 */
+            .changelog-modal .version-button {
+                padding: 0.75rem 1.25rem;
+                font-size: 1rem;
+                min-width: 6rem;
+                text-align: center;
+            }
+            
+            /* 版本导航滚动优化 */
+            .changelog-modal .version-nav {
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+                scrollbar-width: none;
+                padding: 0.5rem 0;
+            }
+            
+            /* 底部添加安全区域 */
+            .changelog-modal .modal-footer {
+                padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0));
+                border-top: 1px solid var(--input-border);
+            }
+            
+            /* 更大的底部按钮 */
+            .changelog-modal .modal-footer .btn {
+                width: 100%;
+                height: 3rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+                border-radius: var(--radius);
+            }
+        }
+        
+        /* 非移动端模态框优化 */
+        @media (min-width: 769px) {
+            .changelog-modal .modal-dialog {
+                max-width: 700px;
+            }
+            
+            .changelog-modal .modal-content {
+                border-radius: var(--radius);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+          /* 移动端模态框样式 - 抽屉式设计 */
+          .modal.mobile-modal .modal-dialog {
+            position: fixed;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            max-height: 90%;
+            bottom: 0;
+            transition: transform 0.3s ease-out;
+            transform: translate(0, 0) !important;
+          }
+
+          .modal.mobile-modal .modal-content {
+            border-radius: 1.5rem 1.5rem 0 0;
+            border: none;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15);
+            height: auto;
+            max-height: 90vh;
+            overflow-y: auto;
+          }
+
+          /* 拖动指示器样式 */
+          .modal-drag-indicator {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.75rem 0 0.25rem;
+          }
+
+          .drag-handle {
+            width: 40px;
+            height: 5px;
+            background-color: #ddd;
+            border-radius: 3px;
+          }
+
+          /* 改善移动端模态框标题区 */
+          .mobile-modal .modal-header {
+            padding-top: 0.25rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          }
+
+          /* 改善移动端模态框内容区 */
+          .mobile-modal .modal-body {
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: 70vh;
+          }
+
+          /* 改善移动端模态框按钮区 */
+          .mobile-modal .modal-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 0.75rem;
+          }
+
+          /* 更大更易点击的关闭按钮 */
+          .mobile-modal .btn-close {
+            padding: 1rem;
+            margin: -0.5rem -0.5rem -0.5rem auto;
+            opacity: 0.8;
+          }
+
+          /* 修复下拉菜单在移动端的显示问题 */
+          .dropdown-menu.show {
+            position: fixed;
+            inset: 0 !important;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            border: none;
+            transform: none !important;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+            z-index: 1050;
+            background-color: rgba(var(--bg-rgb), 0.98);
+            backdrop-filter: blur(10px);
+          }
+
+          /* 下拉菜单中的项目在移动端的样式 */
+          .dropdown-item {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-size: 1.1rem;
+          }
+
+          /* 活跃状态的下拉菜单项 */
+          .dropdown-item.active,
+          .dropdown-item:active,
+          .dropdown-item.active-touch {
+            color: var(--bg);
+            background-color: var(--primary);
+            transform: scale(0.98);
+          }
+
+          /* 添加关闭下拉菜单的按钮 */
+          .dropdown-menu.show::after {
+            content: "点击空白区域关闭";
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+          }
+          
+          /* 改进按钮的触摸区域和反馈 */
+          .btn {
+            min-height: 44px;
+            border-radius: 0.5rem;
+            position: relative;
+            overflow: hidden;
+          }
+          
+          /* 按钮触摸反馈 */
+          .btn:active, .btn.active {
+            transform: scale(0.98);
+          }
+          
+          /* 增强版本历史项 */
+          .changelog-item {
+            background-color: rgba(var(--primary-rgb), 0.05);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s ease;
+          }
+          
+          .changelog-item:active {
+            transform: scale(0.98);
+          }
+          
+          .changelog-version {
+            font-size: 1rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+          }
+        }
+
+        /* 非移动端的模态框优化 */
+        @media (min-width: 769px) {
+          /* 优化版本历史项 */
+          .changelog-item {
+            border-left: 4px solid var(--primary);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background-color: rgba(var(--primary-rgb), 0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
+          }
+          
+          .changelog-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          }
+          
+          .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+          }
+          
+          .modal-content {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          }
+          
+          .modal-content .btn-close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            z-index: 1056;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            padding: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0.8;
+          }
+          
+          .modal-content .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+        }
     </style>
 </head>
 <body>
@@ -2827,95 +3218,180 @@
         }
 
         // 显示更新日志模态框
-        async function showChangelogModal(moduleId, moduleName) {
-            // 记录当前滚动位置
+        function showChangelogModal(moduleId, moduleName) {
+            const modal = document.getElementById('changelogModal');
+            const modalTitle = modal.querySelector('.modal-title');
+            const modalBody = modal.querySelector('.modal-body');
+            const closeBtn = modal.querySelector('.btn-close');
+            
+            // 保存当前滚动位置
             const scrollY = window.scrollY;
             
-            // 获取模块数据
-            const module = window.currentModules.find(m => m.id === moduleId);
-            if (!module) return;
+            // 创建一个隐藏元素用于保存滚动位置
+            const scrollPosElement = document.createElement('div');
+            scrollPosElement.classList.add('modal-scroll-position');
+            scrollPosElement.style.display = 'none';
+            scrollPosElement.dataset.scrollY = scrollY.toString();
+            document.body.appendChild(scrollPosElement);
             
-            // 排序版本
-            const sortedVersions = module.versions?.sort((a, b) => b.versionCode - a.versionCode) || [];
+            // 设置模态框标题
+            modalTitle.textContent = `${moduleName} 更新日志`;
             
-            // 更新模态框标题
-            const modalTitle = document.getElementById('changelogModalLabel');
-            modalTitle.innerHTML = `<i class="ri-list-check-3"></i> ${moduleName} 更新日志`;
+            // 清空模态框内容
+            modalBody.innerHTML = '<div class="text-center my-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">加载中...</span></div><p class="mt-3">正在加载更新日志...</p></div>';
             
-            // 生成版本导航
-            const versionNav = document.getElementById('versionNav');
-            versionNav.innerHTML = '';
+            // 确保关闭按钮可见
+            if (closeBtn) {
+                closeBtn.style.display = 'block';
+                closeBtn.style.opacity = '1';
+                closeBtn.style.zIndex = '1056';
+            }
             
-            // 仅显示有更新日志的版本
-            const versionsWithChangelog = sortedVersions.filter(ver => ver.changelog);
+            // 检查是否为移动设备
+            const isMobile = window.innerWidth <= 768;
             
-            versionsWithChangelog.forEach((ver, index) => {
-                const versionBtn = document.createElement('button');
-                versionBtn.className = `version-button ${index === 0 ? 'active' : ''}`;
-                versionBtn.dataset.url = ver.changelog;
-                versionBtn.dataset.version = ver.version;
-                versionBtn.dataset.index = index;
-                versionBtn.innerText = ver.version;
-                versionBtn.onclick = function() {
-                    document.querySelectorAll('.version-button').forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    loadChangelog(ver.changelog);
-                };
-                versionNav.appendChild(versionBtn);
-            });
-            
-            // 加载第一个版本的更新日志
-            if (versionsWithChangelog.length > 0) {
-                loadChangelog(versionsWithChangelog[0].changelog);
-            } else {
-                // 如果没有版本有更新日志
-                document.getElementById('changelogContent').innerHTML = `<p>此模块没有可用的更新日志。</p>`;
+            // 针对移动端优化模态框显示
+            if (isMobile) {
+                // 添加抽屉式样式
+                modal.classList.add('mobile-modal');
+                
+                // 添加拖动指示器
+                const dragIndicator = document.createElement('div');
+                dragIndicator.classList.add('modal-drag-indicator');
+                dragIndicator.innerHTML = '<div class="drag-handle"></div>';
+                
+                // 添加到模态框头部
+                const modalHeader = modal.querySelector('.modal-header');
+                if (modalHeader && !modalHeader.querySelector('.modal-drag-indicator')) {
+                    modalHeader.prepend(dragIndicator);
+                }
             }
             
             // 显示模态框
-            const changelogModal = new bootstrap.Modal(document.getElementById('changelogModal'));
+            const modalInstance = new bootstrap.Modal(modal);
             
-            // 处理模态框打开时的滚动行为
-            const modalElement = document.getElementById('changelogModal');
-            
-            modalElement.addEventListener('shown.bs.modal', function () {
-                // 创建一个隐藏元素来保存滚动位置
-                const scrollPos = document.createElement('div');
-                scrollPos.className = 'modal-scroll-position';
-                scrollPos.dataset.scrollY = scrollY;
-                document.body.appendChild(scrollPos);
+            // 模态框显示后的处理
+            modal.addEventListener('shown.bs.modal', function onShown() {
+                // 移除监听器，避免重复
+                modal.removeEventListener('shown.bs.modal', onShown);
                 
-                // 修复移动端模态框位置
-                if (window.innerWidth <= 768) {
-                    const modalDialog = this.querySelector('.modal-dialog');
-                    if (modalDialog) {
-                        modalDialog.style.marginTop = Math.max(4, window.scrollY / 5) + 'rem';
-                    }
+                // 处理滚动位置
+                if (isMobile) {
+                    document.body.style.position = 'fixed';
+                    document.body.style.top = `-${scrollY}px`;
+                    document.body.style.width = '100%';
                 }
-            }, { once: true });
-            
-            // 处理模态框关闭时恢复滚动位置
-            modalElement.addEventListener('hidden.bs.modal', function () {
-                const scrollPosElement = document.querySelector('.modal-scroll-position');
-                if (scrollPosElement) {
-                    const savedScrollY = parseInt(scrollPosElement.dataset.scrollY || '0');
-                    
-                    // 移除body上的modal-open类和内联样式
-                    setTimeout(() => {
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-                        document.body.style.paddingRight = '';
-                        
-                        // 恢复滚动位置
-                        window.scrollTo(0, savedScrollY);
-                        
-                        // 移除保存滚动位置的元素
-                        scrollPosElement.remove();
-                    }, 10);
-                }
+                
+                // 加载更新日志数据
+                fetchModuleChangelog(moduleId)
+                    .then(changelog => {
+                        if (changelog && changelog.length > 0) {
+                            // 创建更新日志内容
+                            let changelogContent = '';
+                            
+                            changelog.forEach(log => {
+                                const date = new Date(log.date);
+                                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                                
+                                changelogContent += `
+                                    <div class="changelog-item mb-4">
+                                        <div class="changelog-header d-flex justify-content-between align-items-center">
+                                            <span class="changelog-version badge bg-primary">${log.version}</span>
+                                            <span class="changelog-date text-muted">${formattedDate}</span>
+                                        </div>
+                                        <div class="changelog-content mt-2">
+                                            ${log.changes.map(change => `<p class="mb-1">• ${change}</p>`).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            
+                            modalBody.innerHTML = changelogContent;
+                        } else {
+                            modalBody.innerHTML = '<div class="text-center my-5"><p>暂无更新记录</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('加载更新日志失败:', error);
+                        modalBody.innerHTML = '<div class="text-center my-5"><p class="text-danger">加载更新日志失败</p><p>请稍后再试</p></div>';
+                    });
             });
             
-            changelogModal.show();
+            // 显示模态框
+            modalInstance.show();
+        }
+        
+        // 模拟获取更新日志数据
+        async function fetchModuleChangelog(moduleId) {
+            // 延迟模拟网络请求
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // 模拟的更新日志数据
+            const mockChangelogs = {
+                'module1': [
+                    {
+                        version: 'v2.1.0',
+                        date: '2023-12-15',
+                        changes: [
+                            '修复了某些设备上无法正常启动的问题',
+                            '优化了内存占用，提高了性能',
+                            '新增了对Android 14的支持'
+                        ]
+                    },
+                    {
+                        version: 'v2.0.0',
+                        date: '2023-11-01',
+                        changes: [
+                            '全新的用户界面设计',
+                            '增加了黑暗模式支持',
+                            '支持更多自定义选项'
+                        ]
+                    },
+                    {
+                        version: 'v1.5.0',
+                        date: '2023-09-10',
+                        changes: [
+                            '修复了与其他模块的兼容性问题',
+                            '增强了稳定性',
+                            '更新了底层库版本'
+                        ]
+                    }
+                ],
+                'module2': [
+                    {
+                        version: 'v3.2.1',
+                        date: '2023-12-20',
+                        changes: [
+                            '修复了闪退问题',
+                            '提高了电池效率',
+                            '优化了后台运行机制'
+                        ]
+                    },
+                    {
+                        version: 'v3.2.0',
+                        date: '2023-11-15',
+                        changes: [
+                            '新增了快速设置面板',
+                            '支持更多设备型号',
+                            '修复了已知问题'
+                        ]
+                    }
+                ],
+                'module3': [
+                    {
+                        version: 'v1.0.1',
+                        date: '2023-12-10',
+                        changes: [
+                            '首个稳定版本发布',
+                            '支持基础功能',
+                            '适配主流设备'
+                        ]
+                    }
+                ]
+            };
+            
+            // 返回对应模块的更新日志，如果不存在则返回空数组
+            return mockChangelogs[moduleId] || [];
         }
         
         // 直接显示特定版本的更新日志
@@ -3154,6 +3630,165 @@
                     }
                 });
             }
+            
+            // 优化Bootstrap模态框行为
+            const modalElement = document.getElementById('changelogModal');
+            if (modalElement) {
+                // 为移动端设备应用特殊处理
+                if (window.innerWidth <= 768) {
+                    // 添加拖动关闭模态框功能
+                    let startY = 0;
+                    let currentY = 0;
+                    let isDragging = false;
+                    
+                    modalElement.querySelector('.modal-content').addEventListener('touchstart', function(e) {
+                        const touch = e.touches[0];
+                        startY = touch.clientY;
+                        currentY = startY;
+                        
+                        // 只有从顶部区域开始拖动才允许关闭
+                        const rect = this.getBoundingClientRect();
+                        if (startY - rect.top < 60) {
+                            isDragging = true;
+                            this.style.transition = 'none';
+                        }
+                    }, { passive: true });
+                    
+                    modalElement.querySelector('.modal-content').addEventListener('touchmove', function(e) {
+                        if (!isDragging) return;
+                        
+                        const touch = e.touches[0];
+                        currentY = touch.clientY;
+                        const deltaY = currentY - startY;
+                        
+                        if (deltaY > 0) {
+                            this.style.transform = `translateY(${deltaY}px)`;
+                        }
+                    }, { passive: true });
+                    
+                    modalElement.querySelector('.modal-content').addEventListener('touchend', function() {
+                        if (!isDragging) return;
+                        
+                        isDragging = false;
+                        this.style.transition = 'transform 0.3s ease';
+                        
+                        const deltaY = currentY - startY;
+                        if (deltaY > 100) {
+                            // 下拉距离足够，关闭模态框
+                            this.style.transform = 'translateY(100%)';
+                            bootstrap.Modal.getInstance(modalElement).hide();
+                        } else {
+                            // 下拉距离不够，恢复位置
+                            this.style.transform = '';
+                        }
+                    }, { passive: true });
+                }
+                
+                // 优化模态框显示
+                modalElement.addEventListener('show.bs.modal', function() {
+                    if (window.innerWidth <= 768) {
+                        // 底部抽屉式动画
+                        this.classList.add('mobile-modal');
+                    } else {
+                        this.classList.remove('mobile-modal');
+                    }
+                });
+                
+                // 修复模态框关闭后滚动问题
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    // 移除mobile-modal类
+                    this.classList.remove('mobile-modal');
+                    
+                    // 获取保存的滚动位置
+                    const scrollPosElement = document.querySelector('.modal-scroll-position');
+                    if (scrollPosElement) {
+                        const savedScrollY = parseInt(scrollPosElement.dataset.scrollY || '0');
+                        
+                        // 延迟一帧恢复滚动位置
+                        requestAnimationFrame(() => {
+                            document.body.style.position = '';
+                            document.body.style.width = '';
+                            document.body.style.top = '';
+                            document.body.style.overflow = '';
+                            window.scrollTo(0, savedScrollY);
+                            scrollPosElement.remove();
+                        });
+                    }
+                });
+            }
+            
+            // 优化下拉菜单体验
+            document.querySelectorAll('.btn-outline-secondary[data-bs-toggle="dropdown"]').forEach(function(button) {
+                // 替换为轻量级下拉菜单实现
+                if (window.innerWidth <= 768) {
+                    button.removeAttribute('data-bs-toggle');
+                    
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const dropdown = this.nextElementSibling;
+                        if (!dropdown) return;
+                        
+                        // 立即执行UI反馈
+                        this.classList.add('active');
+                        setTimeout(() => this.classList.remove('active'), 200);
+                        
+                        // 轻量级切换实现
+                        if (dropdown.classList.contains('show')) {
+                            dropdown.classList.add('fade');
+                            dropdown.classList.remove('show');
+                            
+                            // 清理body状态
+                            document.body.classList.remove('modal-open');
+                            const scrollY = parseInt(document.body.style.top || '0');
+                            document.body.style.top = '';
+                            document.body.style.overflow = '';
+                            document.body.style.position = '';
+                            window.scrollTo(0, -scrollY);
+                        } else {
+                            // 关闭任何其他打开的下拉菜单
+                            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                                menu.classList.remove('show');
+                            });
+                            
+                            // 保存滚动位置
+                            const scrollY = window.scrollY;
+                            document.body.style.top = `-${scrollY}px`;
+                            document.body.style.position = 'fixed';
+                            document.body.style.width = '100%';
+                            document.body.classList.add('modal-open');
+                            
+                            // 显示当前下拉菜单
+                            dropdown.classList.add('fade');
+                            
+                            // 使用requestAnimationFrame确保平滑过渡
+                            requestAnimationFrame(() => {
+                                requestAnimationFrame(() => {
+                                    dropdown.classList.add('show');
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+
+            // 为下拉菜单项添加更好的触摸响应
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                // 添加触摸反馈
+                item.addEventListener('touchstart', function() {
+                    this.style.backgroundColor = 'var(--primary)';
+                    this.style.color = 'var(--bg)';
+                }, { passive: true });
+                
+                item.addEventListener('touchend', function() {
+                    // 使用setTimeout避免立即重置，提供视觉反馈
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                        this.style.color = '';
+                    }, 150);
+                }, { passive: true });
+            });
 
             // 初始加载模块数据
             try {
@@ -3917,6 +4552,189 @@
                     btn.setAttribute('data-bs-toggle', 'dropdown');
                 }
             });
+        });
+
+        // 初始化页面后立即运行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 优化移动端触摸体验和防止卡顿
+            if ('ontouchstart' in window) {
+                // 禁用移动设备上的鼠标悬停效果，减少渲染负担
+                const styleSheet = document.createElement('style');
+                styleSheet.textContent = `
+                    @media (max-width: 768px) {
+                        * {
+                            -webkit-tap-highlight-color: transparent;
+                        }
+                        
+                        *:hover {
+                            transition: none !important;
+                        }
+                        
+                        .btn-outline-secondary:hover {
+                            background-color: transparent;
+                            color: var(--bs-body-color);
+                        }
+                        
+                        .dropdown-toggle::after {
+                            transition: none !important;
+                        }
+                    }
+                `;
+                document.head.appendChild(styleSheet);
+                
+                // 防止iOS Safari过度滚动弹性效果导致UI问题
+                document.body.style.overscrollBehavior = 'none';
+                
+                // 优化下拉菜单切换性能
+                document.querySelectorAll('.btn-outline-secondary[data-bs-toggle="dropdown"]').forEach(function(button) {
+                    // 替换Bootstrap下拉菜单为轻量级实现
+                    const dropdownMenu = button.nextElementSibling;
+                    if (dropdownMenu && dropdownMenu.classList.contains('dropdown-menu')) {
+                        // 移除默认的bootstrap触发器
+                        button.removeAttribute('data-bs-toggle');
+                        
+                        // 添加高效的触摸事件处理
+                        button.addEventListener('touchstart', function(e) {
+                            // 避免移动设备上的多次触发
+                            if (e._isClicked) return;
+                            e._isClicked = true;
+                            
+                            // 添加按下效果
+                            this.classList.add('active');
+                            
+                            // 使用setTimeout而不是CSS过渡
+                            setTimeout(() => this.classList.remove('active'), 200);
+                            
+                            // 阻止冒泡和默认行为
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // 下拉菜单显示逻辑
+                            const targetDropdown = this.nextElementSibling;
+                            if (!targetDropdown) return;
+                            
+                            // 直接操作DOM，而不使用Bootstrap的JavaScript
+                            if (targetDropdown.classList.contains('show')) {
+                                // 关闭下拉菜单
+                                targetDropdown.classList.remove('show');
+                                
+                                // 恢复滚动
+                                document.body.style.overflow = '';
+                                document.body.style.position = '';
+                                document.body.style.top = '';
+                                
+                                // 恢复原始滚动位置
+                                if (this.dataset.scrollY) {
+                                    window.scrollTo(0, parseInt(this.dataset.scrollY));
+                                    this.removeAttribute('data-scroll-y');
+                                }
+                            } else {
+                                // 关闭其他打开的下拉菜单
+                                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                                    menu.classList.remove('show');
+                                });
+                                
+                                // 保存当前滚动位置
+                                this.dataset.scrollY = window.scrollY;
+                                
+                                // 显示下拉菜单
+                                targetDropdown.classList.add('show');
+                                
+                                // 阻止背景滚动
+                                document.body.style.overflow = 'hidden';
+                                document.body.style.position = 'fixed';
+                                document.body.style.top = `-${window.scrollY}px`;
+                                document.body.style.width = '100%';
+                                
+                                // 优化下拉菜单项
+                                const items = targetDropdown.querySelectorAll('.dropdown-item');
+                                items.forEach(item => {
+                                    // 清除可能存在的事件监听器
+                                    const newItem = item.cloneNode(true);
+                                    item.parentNode.replaceChild(newItem, item);
+                                    
+                                    // 添加优化的触摸事件
+                                    newItem.addEventListener('touchstart', function(evt) {
+                                        evt.preventDefault();
+                                        evt.stopPropagation();
+                                        
+                                        // 视觉反馈
+                                        this.style.backgroundColor = 'var(--primary)';
+                                        this.style.color = 'var(--bg)';
+                                        
+                                        // 获取选项文本
+                                        const text = this.textContent.trim();
+                                        const value = this.dataset.value;
+                                        const dropdownButton = this.closest('.dropdown').querySelector('.btn-outline-secondary');
+                                        
+                                        // 改变按钮文本
+                                        if (dropdownButton) {
+                                            // 在下一帧更新UI
+                                            requestAnimationFrame(() => {
+                                                dropdownButton.querySelector('span').textContent = text;
+                                                
+                                                // 更新相关元素的值
+                                                if (value && dropdownButton.dataset.target) {
+                                                    const targetSelect = document.querySelector(dropdownButton.dataset.target);
+                                                    if (targetSelect) {
+                                                        targetSelect.value = value;
+                                                        // 触发change事件
+                                                        const event = new Event('change');
+                                                        targetSelect.dispatchEvent(event);
+                                                    }
+                                                }
+                                                
+                                                // 关闭下拉菜单
+                                                targetDropdown.classList.remove('show');
+                                                
+                                                // 恢复滚动
+                                                document.body.style.overflow = '';
+                                                document.body.style.position = '';
+                                                document.body.style.top = '';
+                                                
+                                                // 恢复原始滚动位置
+                                                if (dropdownButton.dataset.scrollY) {
+                                                    window.scrollTo(0, parseInt(dropdownButton.dataset.scrollY));
+                                                    dropdownButton.removeAttribute('data-scroll-y');
+                                                }
+                                            });
+                                        }
+                                    }, { passive: false });
+                                });
+                            }
+                        }, { passive: false });
+                        
+                        // 阻止默认点击行为
+                        button.addEventListener('click', function(e) {
+                            if (window.innerWidth <= 768) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                        });
+                    }
+                });
+                
+                // 点击其他区域关闭下拉菜单
+                document.addEventListener('touchstart', function(e) {
+                    if (!e.target.closest('.dropdown') && !e.target.classList.contains('dropdown-menu')) {
+                        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                            menu.classList.remove('show');
+                            
+                            // 恢复滚动
+                            document.body.style.overflow = '';
+                            document.body.style.position = '';
+                            document.body.style.top = '';
+                            
+                            // 恢复原始滚动位置
+                            const button = menu.previousElementSibling;
+                            if (button && button.dataset.scrollY) {
+                                window.scrollTo(0, parseInt(button.dataset.scrollY));
+                                button.removeAttribute('data-scroll-y');
+                            }
+                        });
+                    }
+                }, { passive: true });
+            }
         });
     </script>
 </body>
