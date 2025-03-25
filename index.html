@@ -49,6 +49,23 @@
                               border-color 0.3s ease,
                               color 0.3s ease,
                               box-shadow 0.3s ease;
+            --card-animation-duration: 0.4s;
+        }
+
+        /* 移动端适配变量 */
+        @media (max-width: 768px) {
+            :root {
+                --radius: 0.75rem;
+                --blur: blur(8px);
+                --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+        }
+        
+        /* 小屏幕设备适配变量 */
+        @media (max-width: 576px) {
+            :root {
+                --radius: 0.625rem;
+            }
         }
 
         [data-bs-theme="dark"] {
@@ -2103,6 +2120,216 @@
             margin-bottom: 0.75rem;
             line-height: 1.5;
         }
+
+        /* 响应式样式 */
+        @media (max-width: 768px) {
+            .module-card {
+                margin-bottom: 1rem;
+            }
+            
+            .module-header {
+                padding: 0.75rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .module-meta {
+                margin-top: 0.5rem;
+                flex-wrap: wrap;
+            }
+            
+            .module-meta span {
+                margin-bottom: 0.25rem;
+            }
+            
+            .module-content {
+                padding: 0.75rem;
+            }
+            
+            .module-description {
+                -webkit-line-clamp: 3;
+            }
+            
+            .module-features {
+                padding: 0.5rem;
+                margin-top: 0.5rem;
+            }
+            
+            .feature-tag {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.4rem;
+                margin-right: 0.25rem;
+                margin-bottom: 0.25rem;
+            }
+            
+            .module-actions {
+                padding: 0.75rem;
+                flex-wrap: wrap;
+            }
+            
+            .action-group {
+                width: 100%;
+                display: flex;
+                flex-wrap: nowrap;
+            }
+            
+            .action-group .btn-primary {
+                flex-grow: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .btn-download {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            .btn-icon-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .input-group {
+                margin-bottom: 0.75rem;
+            }
+            
+            #moduleSearch {
+                height: 42px;
+            }
+            
+            .dropdown-menu {
+                width: 100%;
+            }
+            
+            /* 修复模态框在移动端的显示 */
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            /* 改进移动端滚动体验 */
+            #moduleList {
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        
+        /* 超小屏幕设备适配 */
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            
+            .module-content {
+                padding: 0.5rem;
+            }
+            
+            .module-description {
+                -webkit-line-clamp: 2;
+                font-size: 0.875rem;
+            }
+            
+            .module-actions {
+                padding: 0.5rem;
+            }
+            
+            .module-header h3 {
+                font-size: 1.1rem;
+            }
+            
+            .feature-tag {
+                font-size: 0.65rem;
+                padding: 0.1rem 0.35rem;
+            }
+        }
+
+        /* 模块卡片动画效果 */
+        .module-card {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity var(--card-animation-duration) ease,
+                        transform var(--card-animation-duration) ease;
+        }
+        
+        .module-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 动态加载样式 */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .loading-indicator .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bs-border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .load-more-btn {
+            display: none;
+            margin: 1.5rem auto;
+            padding: 0.5rem 1.5rem;
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: var(--fg);
+            font-weight: 500;
+            transition: all var(--transition);
+            box-shadow: var(--shadow);
+        }
+        
+        .load-more-btn:hover {
+            background: var(--card-hover);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Action group 样式改进 */
+        .action-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .btn-icon-wrapper {
+            display: flex;
+            margin-left: 0.5rem;
+        }
+        
+        .btn-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .download-text {
+            margin-left: 0.25rem;
+        }
     </style>
 </head>
 <body class="vh-100 d-flex flex-column">
@@ -2286,21 +2513,41 @@
         
         // 使用 IntersectionObserver 优化模块卡片加载
         const observeModules = () => {
+            // 检查IntersectionObserver是否可用
+            if (!('IntersectionObserver' in window)) {
+                // 降级处理：如果浏览器不支持，直接显示所有卡片
+                document.querySelectorAll('.module-card').forEach(card => {
+                    card.classList.add('show');
+                });
+                return;
+            }
+            
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('show');
+                        // 使用setTimeout略微延迟，减轻一次性渲染的压力
+                        setTimeout(() => {
+                            entry.target.classList.add('show');
+                        }, entry.target.style.getPropertyValue('--order') * 50);
                         observer.unobserve(entry.target);
                     }
                 });
             }, {
                 threshold: 0.1,
-                rootMargin: '50px'
+                rootMargin: '100px'  // 增加预加载区域，提前开始加载
             });
             
-            document.querySelectorAll('.module-card').forEach(card => {
-                observer.observe(card);
-            });
+            // 分批观察模块卡片，避免同时处理过多元素
+            const cards = document.querySelectorAll('.module-card');
+            const batchSize = 10;
+            
+            for (let i = 0; i < cards.length; i += batchSize) {
+                setTimeout(() => {
+                    for (let j = i; j < i + batchSize && j < cards.length; j++) {
+                        observer.observe(cards[j]);
+                    }
+                }, 0);
+            }
         };
 
         // 优化模块数据缓存
@@ -2411,26 +2658,28 @@
 
                     <div class="module-actions">
                         <div class="action-group">
-                            <a href="${module.sortedVersions[0].zipUrl}" class="btn btn-primary">
+                            <a href="${module.sortedVersions[0].zipUrl}" class="btn btn-primary btn-download">
                                 <i class="ri-download-2-line"></i>
-                                下载
-                                ${module.sortedVersions[0].size ? `<small class="ms-2 opacity-75">${formatSize(module.sortedVersions[0].size)}</small>` : ''}
+                                <span class="download-text">下载</span>
+                                ${module.sortedVersions[0].size ? `<small class="ms-2 opacity-75 download-size">${formatSize(module.sortedVersions[0].size)}</small>` : ''}
                             </a>
-                            <a href="${module.track?.source || `https://github.com/search?q=${encodeURIComponent(module.name)}+in:name&type=repositories`}" 
-                               target="_blank" 
-                               class="btn btn-icon" 
-                               title="${module.track?.source ? '查看源码' : '在 GitHub 上搜索相关仓库'}">
-                                <i class="${module.track?.source ? 'ri-code-line' : 'ri-search-line'}"></i>
-                            </a>
-                            <button type="button" 
-                               class="btn btn-icon changelog-btn"
-                               title="查看更新日志"
-                               data-module-name="${module.name}"
-                               data-module-id="${module.id}"
-                               data-module-version="${module.sortedVersions[0].version}"
-                               data-version-code="${module.sortedVersions[0].versionCode}">
-                                <i class="ri-file-list-3-line"></i>
-                            </button>
+                            <div class="btn-icon-wrapper">
+                                <a href="${module.track?.source || `https://github.com/search?q=${encodeURIComponent(module.name)}+in:name&type=repositories`}" 
+                                   target="_blank" 
+                                   class="btn btn-icon" 
+                                   title="${module.track?.source ? '查看源码' : '在 GitHub 上搜索相关仓库'}">
+                                    <i class="${module.track?.source ? 'ri-code-line' : 'ri-search-line'}"></i>
+                                </a>
+                                <button type="button" 
+                                   class="btn btn-icon changelog-btn"
+                                   title="查看更新日志"
+                                   data-module-name="${module.name}"
+                                   data-module-id="${module.id}"
+                                   data-module-version="${module.sortedVersions[0].version}"
+                                   data-version-code="${module.sortedVersions[0].versionCode}">
+                                    <i class="ri-file-list-3-line"></i>
+                                </button>
+                            </div>
                         </div>
                         ${module.sortedVersions.length > 1 ? `
                             <div class="accordion mt-3">
@@ -2553,6 +2802,11 @@
                     return;
                 }
                 await renderModules(modules);
+                
+                // 检查是否为移动设备，适应性地加载模块
+                if (window.innerWidth <= 768) {
+                    initLazyModuleLoading();
+                }
             } catch (error) {
                 showErrorState(error);
             }
@@ -3579,6 +3833,72 @@
             });
             
             return html;
+        }
+
+        // 初始化懒加载模块 (移动端优化)
+        function initLazyModuleLoading() {
+            const moduleList = document.getElementById('moduleList');
+            const allModules = document.querySelectorAll('.module-card');
+            
+            // 如果模块数量少于10个，不需要懒加载
+            if (allModules.length <= 10) return;
+            
+            // 初始只显示前10个模块
+            for (let i = 10; i < allModules.length; i++) {
+                allModules[i].style.display = 'none';
+            }
+            
+            // 创建加载更多按钮
+            const loadMoreBtn = document.createElement('button');
+            loadMoreBtn.className = 'load-more-btn';
+            loadMoreBtn.textContent = '加载更多模块';
+            loadMoreBtn.style.display = 'block';
+            moduleList.parentNode.insertBefore(loadMoreBtn, moduleList.nextSibling);
+            
+            // 点击加载更多
+            let currentIndex = 10;
+            const batchSize = 10;
+            
+            loadMoreBtn.addEventListener('click', () => {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 加载中...';
+                
+                // 使用setTimeout模拟网络延迟，实际使用时可以去掉
+                setTimeout(() => {
+                    const endIndex = Math.min(currentIndex + batchSize, allModules.length);
+                    
+                    for (let i = currentIndex; i < endIndex; i++) {
+                        allModules[i].style.display = '';
+                        allModules[i].classList.add('show');
+                    }
+                    
+                    currentIndex = endIndex;
+                    
+                    // 如果已经加载完所有模块，隐藏按钮
+                    if (currentIndex >= allModules.length) {
+                        loadMoreBtn.style.display = 'none';
+                    } else {
+                        loadMoreBtn.disabled = false;
+                        loadMoreBtn.textContent = '加载更多模块';
+                    }
+                }, 500);
+            });
+        }
+        
+        // 显示加载指示器
+        function showLoading() {
+            const moduleList = document.getElementById('moduleList');
+            moduleList.innerHTML = `
+                <div class="loading-indicator">
+                    <div class="spinner"></div>
+                    <div>正在加载模块数据...</div>
+                </div>
+            `;
+        }
+        
+        // 隐藏加载指示器
+        function hideLoading() {
+            // 由于renderModules会自动清空moduleList，此处无需操作
         }
     </script>
 </body>
