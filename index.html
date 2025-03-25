@@ -2813,6 +2813,242 @@
             transform: scale(1.1);
           }
         }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+          /* 移动端模态框 - 底部弹出式设计 */
+          .mobile-modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1060 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+            pointer-events: none;
+          }
+          
+          .mobile-modal .modal-dialog {
+            position: fixed;
+            bottom: 0;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            transform: translateY(100%) !important;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            pointer-events: auto;
+          }
+          
+          .mobile-modal.show .modal-dialog {
+            transform: translateY(0) !important;
+          }
+          
+          .mobile-modal .modal-content {
+            border-radius: 20px 20px 0 0 !important;
+            border: none !important;
+            box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12) !important;
+            overflow: hidden !important;
+            max-height: 85vh !important;
+          }
+          
+          /* 拖动指示器 */
+          .drag-indicator {
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+            background-color: rgba(0, 0, 0, 0.15);
+            margin: 12px auto 4px;
+          }
+          
+          /* 底部抽屉式标题栏 */
+          .mobile-modal .modal-header {
+            padding: 4px 16px 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+          }
+          
+          .mobile-modal .modal-title {
+            width: 100%;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 8px 0;
+          }
+          
+          /* 底部抽屉式关闭按钮 */
+          .mobile-modal .btn-close {
+            position: absolute !important;
+            right: 16px !important;
+            top: 16px !important;
+            padding: 8px !important;
+            font-size: 1.5rem !important;
+            opacity: 0.5 !important;
+            background-color: transparent !important;
+            border: none !important;
+            z-index: 1062 !important;
+          }
+          
+          /* 底部抽屉式内容区 */
+          .mobile-modal .modal-body {
+            padding: 16px !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            max-height: calc(70vh - 60px) !important;
+          }
+          
+          /* 模态框背景 */
+          .mobile-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1055;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+          }
+          
+          .mobile-modal-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+          }
+          
+          /* 修复下拉菜单在移动端的显示问题 */
+          .dropdown-menu.show {
+            position: fixed;
+            inset: 0 !important;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            border: none;
+            transform: none !important;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+            z-index: 1050;
+            background-color: rgba(var(--bg-rgb), 0.98);
+            backdrop-filter: blur(10px);
+          }
+
+          /* 下拉菜单中的项目在移动端的样式 */
+          .dropdown-item {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-size: 1.1rem;
+          }
+
+          /* 活跃状态的下拉菜单项 */
+          .dropdown-item.active,
+          .dropdown-item:active,
+          .dropdown-item.active-touch {
+            color: var(--bg);
+            background-color: var(--primary);
+            transform: scale(0.98);
+          }
+
+          /* 添加关闭下拉菜单的按钮 */
+          .dropdown-menu.show::after {
+            content: "点击空白区域关闭";
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+          }
+          
+          /* 改进按钮的触摸区域和反馈 */
+          .btn {
+            min-height: 44px;
+            border-radius: 0.5rem;
+            position: relative;
+            overflow: hidden;
+          }
+          
+          /* 按钮触摸反馈 */
+          .btn:active, .btn.active {
+            transform: scale(0.98);
+          }
+          
+          /* 增强版本历史项 */
+          .changelog-item {
+            background-color: rgba(var(--primary-rgb), 0.05);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s ease;
+          }
+          
+          .changelog-item:active {
+            transform: scale(0.98);
+          }
+          
+          .changelog-version {
+            font-size: 1rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+          }
+        }
+
+        /* 非移动端的模态框优化 */
+        @media (min-width: 769px) {
+          /* 优化版本历史项 */
+          .changelog-item {
+            border-left: 4px solid var(--primary);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background-color: rgba(var(--primary-rgb), 0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
+          }
+          
+          .changelog-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          }
+          
+          .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+          }
+          
+          .modal-content {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          }
+          
+          .modal-content .btn-close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            z-index: 1056;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            padding: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0.8;
+          }
+          
+          .modal-content .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+        }
     </style>
 </head>
 <body>
@@ -3219,70 +3455,233 @@
 
         // 显示更新日志模态框
         function showChangelogModal(moduleId, moduleName) {
-            const modal = document.getElementById('changelogModal');
-            const modalTitle = modal.querySelector('.modal-title');
-            const modalBody = modal.querySelector('.modal-body');
-            const closeBtn = modal.querySelector('.btn-close');
+            // 不使用Bootstrap模态框，改用原生实现
+            const isMobile = window.innerWidth <= 768;
             
             // 保存当前滚动位置
             const scrollY = window.scrollY;
             
-            // 创建一个隐藏元素用于保存滚动位置
-            const scrollPosElement = document.createElement('div');
-            scrollPosElement.classList.add('modal-scroll-position');
-            scrollPosElement.style.display = 'none';
-            scrollPosElement.dataset.scrollY = scrollY.toString();
-            document.body.appendChild(scrollPosElement);
+            // 检查是否已经存在模态框元素
+            let modalElement = document.getElementById('mobileChangelogModal');
+            let backdropElement = document.getElementById('mobileModalBackdrop');
             
-            // 设置模态框标题
-            modalTitle.textContent = `${moduleName} 更新日志`;
-            
-            // 清空模态框内容
-            modalBody.innerHTML = '<div class="text-center my-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">加载中...</span></div><p class="mt-3">正在加载更新日志...</p></div>';
-            
-            // 确保关闭按钮可见
-            if (closeBtn) {
-                closeBtn.style.display = 'block';
-                closeBtn.style.opacity = '1';
-                closeBtn.style.zIndex = '1056';
-            }
-            
-            // 检查是否为移动设备
-            const isMobile = window.innerWidth <= 768;
-            
-            // 针对移动端优化模态框显示
+            // 如果是移动端，创建新的模态框
             if (isMobile) {
-                // 添加抽屉式样式
-                modal.classList.add('mobile-modal');
-                
-                // 添加拖动指示器
-                const dragIndicator = document.createElement('div');
-                dragIndicator.classList.add('modal-drag-indicator');
-                dragIndicator.innerHTML = '<div class="drag-handle"></div>';
-                
-                // 添加到模态框头部
-                const modalHeader = modal.querySelector('.modal-header');
-                if (modalHeader && !modalHeader.querySelector('.modal-drag-indicator')) {
-                    modalHeader.prepend(dragIndicator);
+                // 如果还不存在，创建模态框元素
+                if (!modalElement) {
+                    modalElement = document.createElement('div');
+                    modalElement.id = 'mobileChangelogModal';
+                    modalElement.className = 'mobile-modal';
+                    modalElement.innerHTML = `
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="drag-indicator"></div>
+                                <div class="modal-header">
+                                    <h5 class="modal-title"></h5>
+                                    <button type="button" class="btn-close" aria-label="关闭"></button>
+                                </div>
+                                <div class="modal-body"></div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modalElement);
+                    
+                    // 添加拖动关闭功能
+                    const modalContent = modalElement.querySelector('.modal-content');
+                    const dragIndicator = modalElement.querySelector('.drag-indicator');
+                    let startY = 0;
+                    let currentY = 0;
+                    let isDragging = false;
+                    
+                    // 触摸开始
+                    modalContent.addEventListener('touchstart', function(e) {
+                        // 只有从顶部区域开始拖动才允许关闭
+                        if (e.target === dragIndicator || e.target.closest('.modal-header')) {
+                            const touch = e.touches[0];
+                            startY = touch.clientY;
+                            currentY = startY;
+                            isDragging = true;
+                            this.style.transition = 'none';
+                        }
+                    }, { passive: true });
+                    
+                    // 触摸移动
+                    modalContent.addEventListener('touchmove', function(e) {
+                        if (!isDragging) return;
+                        
+                        const touch = e.touches[0];
+                        currentY = touch.clientY;
+                        const deltaY = currentY - startY;
+                        
+                        if (deltaY > 0) {
+                            this.style.transform = `translateY(${deltaY}px)`;
+                        }
+                    }, { passive: true });
+                    
+                    // 触摸结束
+                    modalContent.addEventListener('touchend', function() {
+                        if (!isDragging) return;
+                        
+                        isDragging = false;
+                        this.style.transition = 'transform 0.3s ease';
+                        
+                        const deltaY = currentY - startY;
+                        if (deltaY > 100) {
+                            // 下拉距离足够，关闭模态框
+                            this.style.transform = 'translateY(100%)';
+                            modalElement.classList.remove('show');
+                            if (backdropElement) {
+                                backdropElement.classList.remove('show');
+                                setTimeout(() => {
+                                    backdropElement.remove();
+                                }, 300);
+                            }
+                            
+                            // 恢复滚动
+                            setTimeout(() => {
+                                document.body.style.position = '';
+                                document.body.style.width = '';
+                                document.body.style.top = '';
+                                document.body.style.overflow = '';
+                                window.scrollTo(0, parseInt(modalElement.dataset.scrollY || '0'));
+                                modalElement.dataset.scrollY = '';
+                            }, 300);
+                        } else {
+                            // 下拉距离不够，恢复位置
+                            this.style.transform = '';
+                        }
+                    }, { passive: true });
+                    
+                    // 关闭按钮点击事件
+                    const closeBtn = modalElement.querySelector('.btn-close');
+                    closeBtn.addEventListener('click', function() {
+                        const modalDialog = modalElement.querySelector('.modal-dialog');
+                        modalDialog.style.transform = 'translateY(100%)';
+                        
+                        // 隐藏背景
+                        if (backdropElement) {
+                            backdropElement.classList.remove('show');
+                            setTimeout(() => {
+                                backdropElement.remove();
+                            }, 300);
+                        }
+                        
+                        // 恢复滚动
+                        setTimeout(() => {
+                            document.body.style.position = '';
+                            document.body.style.width = '';
+                            document.body.style.top = '';
+                            document.body.style.overflow = '';
+                            window.scrollTo(0, parseInt(modalElement.dataset.scrollY || '0'));
+                            modalElement.dataset.scrollY = '';
+                            modalElement.classList.remove('show');
+                        }, 300);
+                    });
                 }
-            }
-            
-            // 显示模态框
-            const modalInstance = new bootstrap.Modal(modal);
-            
-            // 模态框显示后的处理
-            modal.addEventListener('shown.bs.modal', function onShown() {
-                // 移除监听器，避免重复
-                modal.removeEventListener('shown.bs.modal', onShown);
                 
-                // 处理滚动位置
-                if (isMobile) {
-                    document.body.style.position = 'fixed';
-                    document.body.style.top = `-${scrollY}px`;
-                    document.body.style.width = '100%';
+                // 创建背景遮罩
+                if (!backdropElement) {
+                    backdropElement = document.createElement('div');
+                    backdropElement.id = 'mobileModalBackdrop';
+                    backdropElement.className = 'mobile-modal-backdrop';
+                    document.body.appendChild(backdropElement);
+                    
+                    // 点击背景关闭模态框
+                    backdropElement.addEventListener('click', function() {
+                        const closeBtn = modalElement.querySelector('.btn-close');
+                        if (closeBtn) closeBtn.click();
+                    });
                 }
                 
-                // 加载更新日志数据
+                // 设置模态框内容
+                const modalTitle = modalElement.querySelector('.modal-title');
+                const modalBody = modalElement.querySelector('.modal-body');
+                
+                // 保存滚动位置
+                modalElement.dataset.scrollY = scrollY.toString();
+                
+                // 设置标题和加载指示器
+                modalTitle.textContent = `${moduleName} 更新日志`;
+                modalBody.innerHTML = `
+                    <div class="text-center my-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载更新日志...</p>
+                    </div>
+                `;
+                
+                // 禁用页面滚动
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${scrollY}px`;
+                document.body.style.width = '100%';
+                document.body.style.overflow = 'hidden';
+                
+                // 显示背景和模态框
+                requestAnimationFrame(() => {
+                    backdropElement.classList.add('show');
+                    modalElement.classList.add('show');
+                    
+                    // 动画完成后再加载数据，提高性能
+                    setTimeout(() => {
+                        fetchModuleChangelog(moduleId)
+                            .then(changelog => {
+                                if (changelog && changelog.length > 0) {
+                                    // 创建更新日志内容
+                                    let changelogContent = '';
+                                    
+                                    changelog.forEach(log => {
+                                        const date = new Date(log.date);
+                                        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                                        
+                                        changelogContent += `
+                                            <div class="changelog-item mb-4">
+                                                <div class="changelog-header d-flex justify-content-between align-items-center">
+                                                    <span class="changelog-version badge bg-primary">${log.version}</span>
+                                                    <span class="changelog-date text-muted">${formattedDate}</span>
+                                                </div>
+                                                <div class="changelog-content mt-2">
+                                                    ${log.changes.map(change => `<p class="mb-1">• ${change}</p>`).join('')}
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                    
+                                    modalBody.innerHTML = changelogContent;
+                                } else {
+                                    modalBody.innerHTML = '<div class="text-center my-5"><p>暂无更新记录</p></div>';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('加载更新日志失败:', error);
+                                modalBody.innerHTML = '<div class="text-center my-5"><p class="text-danger">加载更新日志失败</p><p>请稍后再试</p></div>';
+                            });
+                    }, 300);
+                });
+            } else {
+                // 桌面端使用Bootstrap模态框
+                const modal = document.getElementById('changelogModal');
+                const modalTitle = modal.querySelector('.modal-title');
+                const modalBody = modal.querySelector('.modal-body');
+                
+                // 设置标题
+                modalTitle.textContent = `${moduleName} 更新日志`;
+                
+                // 清空模态框内容并显示加载指示器
+                modalBody.innerHTML = `
+                    <div class="text-center my-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载更新日志...</p>
+                    </div>
+                `;
+                
+                // 显示模态框
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+                
+                // 加载数据
                 fetchModuleChangelog(moduleId)
                     .then(changelog => {
                         if (changelog && changelog.length > 0) {
@@ -3315,10 +3714,7 @@
                         console.error('加载更新日志失败:', error);
                         modalBody.innerHTML = '<div class="text-center my-5"><p class="text-danger">加载更新日志失败</p><p>请稍后再试</p></div>';
                     });
-            });
-            
-            // 显示模态框
-            modalInstance.show();
+            }
         }
         
         // 模拟获取更新日志数据
@@ -4736,6 +5132,184 @@
                 }, { passive: true });
             }
         });
+
+        // 页面初始化 - 性能优化
+        document.addEventListener('DOMContentLoaded', function() {
+          // 性能优化标志
+          window.APP_OPTIMIZED = true;
+          
+          // 移动端设备检测
+          const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+          
+          if (isMobile) {
+            // 添加移动端专用类
+            document.documentElement.classList.add('mobile-device');
+            
+            // 禁用hover效果以提高性能
+            const styleSheet = document.createElement('style');
+            styleSheet.innerHTML = `
+              @media (max-width: 768px) {
+                * {
+                  -webkit-tap-highlight-color: transparent;
+                }
+                .btn-outline-secondary:hover, .dropdown-item:hover, .card:hover {
+                  transform: none !important;
+                  box-shadow: none !important;
+                  transition: none !important;
+                }
+              }
+            `;
+            document.head.appendChild(styleSheet);
+            
+            // 阻止iOS Safari的弹性滚动
+            document.body.style.overscrollBehavior = 'none';
+            
+            // 优化下拉菜单
+            optimizeDropdowns();
+            
+            // 预加载常用资源
+            preloadResources();
+          }
+        });
+
+        // 优化下拉菜单
+        function optimizeDropdowns() {
+          const dropdownToggles = document.querySelectorAll('.dropdown-toggle, .btn-outline-secondary[data-bs-toggle="dropdown"]');
+          
+          dropdownToggles.forEach(toggle => {
+            // 移除可能引起延迟的属性
+            toggle.removeAttribute('data-bs-toggle');
+            toggle.removeAttribute('aria-expanded');
+            
+            // 添加自定义下拉菜单处理
+            toggle.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              // 查找对应的下拉菜单
+              const nextSibling = this.nextElementSibling;
+              if (!nextSibling || !nextSibling.classList.contains('dropdown-menu')) return;
+              
+              // 立即提供视觉反馈，不等待CSS过渡
+              this.classList.add('active');
+              setTimeout(() => this.classList.remove('active'), 150);
+              
+              // 轻量级切换实现
+              if (nextSibling.classList.contains('show')) {
+                // 关闭下拉菜单
+                closeDropdown(nextSibling, this);
+              } else {
+                // 关闭其他打开的下拉菜单
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                  closeDropdown(menu, menu.previousElementSibling);
+                });
+                
+                // 记录滚动位置
+                const scrollY = window.scrollY;
+                this.dataset.scrollY = scrollY.toString();
+                
+                // 打开下拉菜单
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = `-${scrollY}px`;
+                
+                // 优化显示下拉菜单
+                requestAnimationFrame(() => {
+                  nextSibling.classList.add('show');
+                });
+                
+                // 优化下拉菜单项
+                optimizeDropdownItems(nextSibling, this);
+              }
+            }, { passive: false });
+          });
+          
+          // 点击空白区域关闭下拉菜单
+          document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+              document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                closeDropdown(menu, menu.previousElementSibling);
+              });
+            }
+          });
+          
+          // 提取关闭下拉菜单功能为单独函数以减少代码重复
+          function closeDropdown(menu, toggle) {
+            menu.classList.remove('show');
+            
+            // 恢复滚动
+            if (toggle && toggle.dataset.scrollY) {
+              const scrollY = parseInt(toggle.dataset.scrollY);
+              document.body.style.overflow = '';
+              document.body.style.position = '';
+              document.body.style.width = '';
+              document.body.style.top = '';
+              window.scrollTo(0, scrollY);
+              toggle.removeAttribute('data-scroll-y');
+            }
+          }
+          
+          // 优化下拉菜单项
+          function optimizeDropdownItems(dropdown, toggle) {
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            
+            items.forEach(item => {
+              // 移除现有事件监听器
+              const newItem = item.cloneNode(true);
+              item.parentNode.replaceChild(newItem, item);
+              
+              // 添加高性能触摸事件
+              newItem.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                
+                // 提供即时视觉反馈
+                this.style.backgroundColor = 'var(--primary)';
+                this.style.color = 'var(--bg)';
+                
+                // 获取选项文本和值
+                const text = this.textContent.trim();
+                const value = this.dataset.value;
+                
+                // 使用requestAnimationFrame更新UI
+                requestAnimationFrame(() => {
+                  // 更新按钮文本
+                  const span = toggle.querySelector('span');
+                  if (span) span.textContent = text;
+                  
+                  // 更新相关select元素
+                  if (value && toggle.dataset.target) {
+                    const target = document.querySelector(toggle.dataset.target);
+                    if (target) {
+                      target.value = value;
+                      target.dispatchEvent(new Event('change'));
+                    }
+                  }
+                  
+                  // 关闭下拉菜单
+                  closeDropdown(dropdown, toggle);
+                });
+              }, { passive: false });
+            });
+          }
+        }
+
+        // 预加载资源
+        function preloadResources() {
+          // 延迟加载非关键资源
+          setTimeout(() => {
+            // 预加载常用图标
+            const icons = ['ri-arrow-right-line', 'ri-information-line', 'ri-download-line'];
+            icons.forEach(icon => {
+              const link = document.createElement('link');
+              link.rel = 'preload';
+              link.as = 'font';
+              link.href = `https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.woff2`;
+              link.crossOrigin = 'anonymous';
+              document.head.appendChild(link);
+            });
+          }, 1000);
+        }
     </script>
 </body>
 </html> 
