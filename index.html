@@ -2461,16 +2461,18 @@
         
         /* 修复Bootstrap下拉菜单闪烁问题 */
         .dropdown-menu.fade {
-            display: block;
+            transition: transform 0.2s ease, opacity 0.2s ease !important;
+            transform-origin: top center;
+            transform: scaleY(0.7) translateY(-10px);
             opacity: 0;
-            pointer-events: none;
-            transform: translateY(-10px);
+            display: block;
+            margin: 0;
+            border: 0;
         }
         
         .dropdown-menu.fade.show {
+            transform: scaleY(1) translateY(0);
             opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
         }
 
         /* 提高模态框z-index以避免被其他元素遮挡 */
@@ -3450,7 +3452,7 @@
 
         // 检查模块是否有任何版本包含更新日志
         function hasAnyChangelog(module) {
-            return module.sortedVersions && module.sortedVersions.some(ver => ver.changelog);
+            return module.sortedVersions && module.sortedVersions.some(ver => ver.changelog && ver.changelog.trim() !== '');
         }
 
         // 显示更新日志模态框
@@ -3820,6 +3822,8 @@
         async function loadChangelog(url) {
             // 显示加载动画
             const changelogContent = document.getElementById('changelogContent');
+            if (!changelogContent) return;
+            
             changelogContent.innerHTML = `
                 <div class="loading-spinner">
                     <div class="spinner-border text-primary" role="status">
@@ -3829,6 +3833,11 @@
             `;
             
             try {
+                // 检查URL是否有效
+                if (!url || url.trim() === '') {
+                    throw new Error('无效的更新日志链接');
+                }
+                
                 const response = await fetch(url);
                 
                 if (!response.ok) {
@@ -3837,6 +3846,12 @@
                 
                 // 读取Markdown内容
                 const markdown = await response.text();
+                
+                // 检查内容是否为空或者为"暂无更新日志"
+                if (!markdown || markdown.trim() === '' || markdown.includes('暂无更新日志')) {
+                    changelogContent.innerHTML = '<div class="text-center my-5"><p>暂无更新日志</p></div>';
+                    return;
+                }
                 
                 // 简单的Markdown解析
                 const html = parseMarkdown(markdown);
@@ -3957,6 +3972,95 @@
         const debouncedFilter = debounce(() => {
             requestAnimationFrame(filterModules);
         }, 300);
+        
+        // 预加载筛选结果但不更新DOM，减少点击时的延迟感
+        let cachedFilteredModules = null;
+        let lastFilterParams = '';
+        
+        function prepareFilteredModules() {
+            const searchQuery = document.getElementById('moduleSearch').value.toLowerCase();
+            const categoryFilter = document.getElementById('categorySelect').value;
+            const sortBy = document.getElementById('sortSelect').value;
+            const featureFilter = document.getElementById('featureSelect').value;
+            
+            // 构建当前过滤参数字符串
+            const currentFilterParams = `${searchQuery}|${categoryFilter}|${sortBy}|${featureFilter}`;
+            
+            // 如果参数相同且已有缓存，则跳过
+            if (lastFilterParams === currentFilterParams && cachedFilteredModules) {
+                return cachedFilteredModules;
+            }
+            
+            // 更新参数记录
+            lastFilterParams = currentFilterParams;
+            
+            // 执行过滤但不更新DOM
+            if (!window.currentModules) return [];
+            
+            const filtered = window.currentModules.filter(module => {
+                // 搜索过滤
+                if (searchQuery) {
+                    const searchFields = [
+                        module.name,
+                        module.author,
+                        module.description,
+                        ...(module.tags || [])
+                    ].map(field => (field || '').toLowerCase());
+                    
+                    if (!searchFields.some(field => field.includes(searchQuery))) {
+                        return false;
+                    }
+                }
+                
+                // 分类过滤
+                if (categoryFilter && module.category !== categoryFilter) {
+                    return false;
+                }
+                
+                // 功能特性过滤
+                if (featureFilter && (!module.features || !module.features[featureFilter])) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // 排序
+            if (sortBy === 'name') {
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortBy === 'author') {
+                filtered.sort((a, b) => a.author.localeCompare(b.author));
+            } else {
+                // 默认按更新时间排序
+                filtered.sort((a, b) => {
+                    const timeA = a.versions?.[0]?.timestamp || 0;
+                    const timeB = b.versions?.[0]?.timestamp || 0;
+                    return timeB - timeA;
+                });
+            }
+            
+            // 缓存结果
+            cachedFilteredModules = filtered;
+            return filtered;
+        }
+        
+        // 实际执行过滤并更新DOM
+        function filterModules() {
+            const filtered = prepareFilteredModules();
+            
+            // 更新DOM
+            renderModules(filtered);
+            
+            // 更新结果计数
+            updateResultCount(filtered.length);
+        }
+        
+        function updateResultCount(count) {
+            const resultCount = document.getElementById('resultCount');
+            if (resultCount) {
+                resultCount.textContent = `${count} 个模块`;
+            }
+        }
 
         // 初始化
         document.addEventListener('DOMContentLoaded', async function() {
@@ -4257,6 +4361,12 @@
 
             // 移动端下拉菜单打开时处理
             document.querySelectorAll('.btn[data-bs-toggle="dropdown"]').forEach(btn => {
+                // 预加载筛选结果
+                btn.addEventListener('mouseenter', function() {
+                    // 提前准备筛选数据，但不更新DOM
+                    prepareFilteredModules();
+                });
+                
                 btn.addEventListener('click', function() {
                     if (window.innerWidth <= 768) {
                         requestAnimationFrame(() => {
@@ -4275,16 +4385,14 @@
                     dropdowns.forEach(menu => {
                         const rect = menu.getBoundingClientRect();
                         if (e.clientY < rect.top) {
-                            menu.addEventListener('transitionend', function handler(e) {
-                                if (e.propertyName === 'transform') {
-                                    document.body.classList.remove('modal-open');
-                                    const scrollY = parseInt(document.body.style.top || '0');
-                                    document.body.style.top = '';
-                                    window.scrollTo(0, -scrollY);
-                                    menu.removeEventListener('transitionend', handler);
-                                }
-                            });
                             menu.classList.remove('show');
+                            // 避免使用transitionend事件，直接使用setTimeout
+                            setTimeout(() => {
+                                document.body.classList.remove('modal-open');
+                                const scrollY = parseInt(document.body.style.top || '0');
+                                document.body.style.top = '';
+                                window.scrollTo(0, -scrollY);
+                            }, 100);
                         }
                     });
                 }
