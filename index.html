@@ -26,6 +26,8 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.6.0/fonts/remixicon.css">
+    <!-- 添加Markdown支持 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
     <style>
         :root {
             --primary: #18181b;
@@ -1901,505 +1903,299 @@
             }
         }
 
-        /* 更新日志模态框美化 */
-        .modal-content {
-            backdrop-filter: blur(var(--backdrop-blur));
-            -webkit-backdrop-filter: blur(var(--backdrop-blur));
-            background-color: var(--glass-bg);
-            border: var(--glass-border);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            border-radius: var(--bs-border-radius-xl);
-            overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        
-        [data-bs-theme="dark"] .modal-content {
-            background-color: var(--glass-dark-bg);
-        }
-        
-        .modal-header, .modal-footer {
-            border-color: rgba(var(--bs-secondary-rgb), 0.1);
-            padding: 1.5rem 2rem;
-        }
-        
-        .modal-header {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .modal-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                rgba(var(--bs-secondary-rgb), 0.03),
-                rgba(var(--bs-secondary-rgb), 0.1),
-                rgba(var(--bs-secondary-rgb), 0.03)
-            );
-        }
-        
-        .modal-title {
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--bs-body-color);
+        /* 添加模块更新日志模态框样式 */
+        .changelog-modal .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            animation: modalFadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .modal-title i {
-            color: var(--vibrant-blue);
-            font-size: 1.2em;
+        .changelog-modal .modal-header,
+        .changelog-modal .modal-footer {
+            border-color: var(--input-border);
+            background: transparent;
+            padding: 1.25rem 1.5rem;
         }
-        
-        .modal-title .version-tag {
-            font-size: 0.75em;
-            background: rgba(var(--vibrant-blue-rgb), 0.1);
-            color: var(--vibrant-blue);
-            padding: 0.35em 0.75em;
-            border-radius: 50rem;
-            margin-left: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .modal-body {
-            padding: 2rem;
-            max-height: 65vh;
+
+        .changelog-modal .modal-body {
+            padding: 1.5rem;
+            max-height: 70vh;
             overflow-y: auto;
         }
-        
-        /* 滚动条在模态框中的样式 */
-        .modal-body::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .modal-body::-webkit-scrollbar-track {
-            background: rgba(var(--bs-secondary-rgb), 0.05);
-            border-radius: 4px;
-        }
-        
-        .modal-body::-webkit-scrollbar-thumb {
-            background: rgba(var(--bs-secondary-rgb), 0.15);
-            border-radius: 4px;
-        }
-        
-        .modal-body::-webkit-scrollbar-thumb:hover {
-            background: rgba(var(--bs-secondary-rgb), 0.25);
-        }
-        
-        .modal-footer .btn {
-            padding: 0.7rem 2rem;
+
+        .changelog-modal .modal-title {
             font-weight: 600;
-            border-radius: var(--bs-border-radius-lg);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        
-        .modal-footer .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* 更新日志内容样式 */
-        .changelog-content {
-            line-height: 1.8;
-            color: var(--bs-body-color);
-        }
-        
-        .changelog-content h1, 
-        .changelog-content h2, 
-        .changelog-content h3 {
-            color: var(--vibrant-blue);
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-        
-        .changelog-content h1 {
-            font-size: 1.75rem;
-            margin-top: 0;
-        }
-        
-        .changelog-content h2 {
-            font-size: 1.5rem;
-        }
-        
-        .changelog-content h3 {
+            color: var(--fg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             font-size: 1.25rem;
         }
-        
-        .changelog-content ul {
-            padding-left: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .changelog-content ul li {
-            margin-bottom: 0.5rem;
-            position: relative;
-        }
-        
-        .changelog-content ul li::before {
-            content: '';
-            position: absolute;
-            left: -1.1rem;
-            top: 0.6rem;
-            width: 6px;
-            height: 6px;
+
+        .changelog-modal .btn-close {
+            background: var(--input-bg);
             border-radius: 50%;
-            background-color: var(--vibrant-blue);
+            border: 1px solid var(--input-border);
+            opacity: 1;
+            padding: 0.75rem;
+            margin: -0.75rem -0.75rem -0.75rem auto;
+            transition: all 0.3s ease;
         }
-        
-        .changelog-content p {
-            margin-bottom: 1rem;
+
+        .changelog-modal .btn-close:hover {
+            background: var(--primary);
+            transform: rotate(90deg);
         }
-        
-        .changelog-content a {
-            color: var(--vibrant-blue);
+
+        .changelog-modal .version-nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .changelog-modal .version-button {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: var(--fg);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .changelog-modal .version-button:hover,
+        .changelog-modal .version-button.active {
+            background: var(--primary);
+            color: var(--bg);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .changelog-modal .markdown-body {
+            font-family: inherit;
+            background: transparent;
+            color: var(--fg);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            animation: fadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .changelog-modal .markdown-body pre,
+        .changelog-modal .markdown-body code {
+            background: var(--card-bg) !important;
+            border-radius: 0.5rem;
+        }
+
+        .changelog-modal .markdown-body img {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .changelog-modal .markdown-body a {
+            color: var(--primary);
             text-decoration: none;
             transition: all 0.2s ease;
-            border-bottom: 1px dashed rgba(var(--vibrant-blue-rgb), 0.4);
         }
-        
-        .changelog-content a:hover {
-            border-bottom: 1px solid var(--vibrant-blue);
+
+        .changelog-modal .markdown-body a:hover {
+            text-decoration: underline;
         }
-        
-        .changelog-content code {
-            background-color: rgba(var(--bs-secondary-rgb), 0.1);
-            padding: 0.2em 0.4em;
-            border-radius: 3px;
-            font-size: 0.9em;
-        }
-        
-        /* 版本选择器 */
-        .version-selector {
+
+        .changelog-modal .loading-spinner {
             display: flex;
-            margin-bottom: 1.5rem;
-            border-radius: var(--bs-border-radius);
-            background: rgba(var(--bs-secondary-rgb), 0.05);
-            padding: 0.5rem;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            white-space: nowrap;
-        }
-        
-        .version-selector::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .version-selector .version-option {
-            padding: 0.5rem 1rem;
-            border-radius: var(--bs-border-radius);
-            margin-right: 0.5rem;
-            font-size: 0.9rem;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            color: var(--bs-secondary);
-        }
-        
-        .version-selector .version-option:last-child {
-            margin-right: 0;
-        }
-        
-        .version-selector .version-option.active {
-            background-color: rgba(var(--vibrant-blue-rgb), 0.1);
-            color: var(--vibrant-blue);
-            font-weight: 600;
-        }
-        
-        .version-selector .version-option:hover:not(.active) {
-            background-color: rgba(var(--bs-secondary-rgb), 0.1);
-        }
-        
-        .version-selector .version-option .version-date {
-            font-size: 0.8em;
-            margin-left: 0.5rem;
-            opacity: 0.7;
-        }
-        
-        /* 加载状态 */
-        .changelog-loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            padding: 3rem 1rem;
-            text-align: center;
-        }
-        
-        .changelog-loading .spinner-border {
-            width: 3rem;
-            height: 3rem;
-            margin-bottom: 1.5rem;
-            color: var(--vibrant-blue) !important;
-        }
-        
-        /* 错误状态 */
-        .changelog-error {
-            background-color: rgba(var(--bs-danger-rgb), 0.1);
-            border-radius: var(--bs-border-radius);
-            padding: 1.5rem;
-            text-align: center;
-            color: var(--bs-danger);
-        }
-        
-        .changelog-error i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        /* 移动端适配 */
-        @media (max-width: 768px) {
-            .modal-dialog {
-                margin: 0.5rem;
-                max-width: calc(100% - 1rem);
-            }
-            
-            .modal-header, .modal-footer {
-                padding: 1rem 1.25rem;
-            }
-            
-            .modal-body {
-                padding: 1.25rem;
-                max-height: 70vh;
-            }
-            
-            .changelog-content h1 {
-                font-size: 1.5rem;
-            }
-            
-            .changelog-content h2 {
-                font-size: 1.3rem;
-            }
-            
-            .changelog-content h3 {
-                font-size: 1.1rem;
-            }
-            
-            .version-selector {
-                padding: 0.35rem;
-            }
-            
-            .version-selector .version-option {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.85rem;
-            }
-        }
-
-        /* 模块卡片动画和样式 */
-        .module-card {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: var(--card-shadow);
-            height: 100%;
-            border-radius: var(--bs-card-border-radius);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: 1px solid rgba(var(--bs-secondary-rgb), 0.08);
-            background-color: var(--bs-light);
-            transition-delay: calc(var(--animation-order, 0) * 0.05s);
-            will-change: transform, opacity, box-shadow;
-        }
-        
-        [data-bs-theme="dark"] .module-card {
-            background-color: var(--bs-card-bg);
-            border-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        .module-card.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .module-card:hover {
-            box-shadow: var(--card-hover-shadow);
-            transform: scale(1.02);
-            border-color: rgba(var(--bs-secondary-rgb), 0.2);
-        }
-        
-        /* 卡片内部内容上移效果 */
-        .module-card .card-body,
-        .module-card .card-footer {
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        
-        .module-card:hover .card-body,
-        .module-card:hover .card-footer {
-            transform: translateY(-5px);
-        }
-        
-        /* 分类和标签样式优化 */
-        .feature-tag {
-            font-size: 0.75rem;
-            padding: 0.4rem 0.8rem;
-            border-radius: 50rem;
-            background-color: rgba(var(--bs-secondary-rgb), 0.1);
-            color: var(--bs-secondary);
-            display: inline-flex;
             align-items: center;
-            white-space: nowrap;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(2px);
-            border-radius: var(--bs-border-radius-lg);
-            border: 1px solid rgba(var(--bs-secondary-rgb), 0.05);
-        }
-        
-        .feature-tag:hover {
-            background-color: rgba(var(--bs-secondary-rgb), 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            height: 200px;
+            animation: fadeIn 0.3s ease;
         }
 
-        .feature-tag i {
-            font-size: 0.7rem;
-            margin-right: 0.35rem;
-            transition: transform 0.3s ease;
-        }
-        
-        .feature-tag:hover i {
-            transform: scale(1.2);
-        }
-        
-        /* 移动端适配优化 */
-        @media (max-width: 768px) {
-            .module-card {
-                border-radius: var(--bs-border-radius-lg);
-            }
-            
-            .module-card:hover {
-                transform: scale(1.01);
-            }
-            
-            .module-card:hover .card-body,
-            .module-card:hover .card-footer {
-                transform: translateY(-3px);
-            }
-            
-            .feature-tag {
-                padding: 0.35rem 0.7rem;
-                font-size: 0.7rem;
-            }
-        }
-
-        /* 模态框显示动画 */
-        .modal.fade .modal-dialog {
-            transform: scale(0.95) translateY(10px);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        
-        .modal.show .modal-dialog {
-            transform: scale(1) translateY(0);
-        }
-        
-        /* 模态框内容动画 */
-        .modal-content {
-            animation: modalFadeIn 0.4s forwards;
-        }
-        
         @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .version-selector .version-option {
-            animation: slideInRight 0.3s forwards;
-            animation-delay: calc(var(--option-index, 0) * 0.05s);
-            opacity: 0;
-        }
-        
-        @keyframes slideInRight {
-            from { 
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        /* 移动端触摸样式 */
-        .touch-active {
-            transform: scale(0.98) !important;
-            transition: transform 0.2s ease !important;
-            box-shadow: 0 0 0 1px rgba(var(--vibrant-blue-rgb), 0.3) !important;
-        }
-        
-        /* 触摸设备适配 */
-        @media (hover: none) {
-            .btn:active, .feature-tag:active, .module-card:active {
-                transform: scale(0.97);
-            }
-            
-            .module-card:hover {
-                transform: none;
-                box-shadow: var(--card-shadow);
-            }
-            
-            .module-card:active {
-                box-shadow: var(--card-hover-shadow);
-            }
-            
-            .module-card:hover .card-body,
-            .module-card:hover .card-footer {
-                transform: none;
-            }
-            
-            .module-card:active .card-body,
-            .module-card:active .card-footer {
-                transform: translateY(-3px);
-            }
-        }
-        
-        /* 增强模块卡片滑入动画 */
-        .module-card.show {
-            animation: fadeInCard 0.5s forwards;
-            animation-delay: calc(var(--animation-order, 0) * 0.05s);
-        }
-        
-        @keyframes fadeInCard {
             from {
                 opacity: 0;
-                transform: translateY(30px) scale(0.95);
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* 修正分类内容右边圆角 */
+        .dropdown-menu {
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .dropdown-item {
+            border-radius: calc(var(--radius) - 2px);
+        }
+
+        /* 顶栏右上角Telegram按钮 */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .telegram-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--fg);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-decoration: none;
+        }
+
+        .telegram-button:hover {
+            background: #0088cc;
+            color: white;
+            transform: translateY(-4px) rotate(8deg);
+            box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+            border-color: #0088cc;
+        }
+
+        .telegram-button i {
+            font-size: 1.25rem;
+        }
+
+        /* 优化动效 */
+        .btn, .feature-tag, .module-card, .dropdown-item {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .dropdown-menu.show {
+            animation: dropdownFadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.97);
             }
             to {
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
         }
-        
-        /* 优化卡片边框动画效果 */
-        .module-card::before {
+
+        /* 添加流体背景动画 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(at 40% 20%, rgba(63, 63, 70, 0.03) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, rgba(82, 82, 91, 0.03) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(39, 39, 42, 0.03) 0px, transparent 50%);
+            background-size: 200% 200%;
+            opacity: 0.8;
+            z-index: -1;
+            animation: gradientFlow 30s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .feature-tag, .btn-icon, .module-version, .footer-link, .version-button {
+            will-change: transform;
+        }
+
+        .module-card {
+            will-change: transform, box-shadow;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                border-color 0.3s ease;
+        }
+
+        /* 添加淡入效果 */
+        body {
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 修复模块操作按钮动画 */
+        .btn-primary {
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: transform, box-shadow;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 添加模块卡片悬停3D效果 */
+        .module-card {
+            perspective: 1000px;
+        }
+
+        .module-card:hover .module-content {
+            transform: translateZ(20px);
+        }
+
+        /* 模块更新日志按钮 */
+        .changelog-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .changelog-button:before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: inherit;
-            border: 0px solid rgba(var(--vibrant-blue-rgb), 0.3);
-            pointer-events: none;
-            transition: border-width 0.3s ease;
-            z-index: 1;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            transform: scale(0);
+            transition: transform 0.7s ease-out;
+            border-radius: 50%;
         }
-        
-        .module-card:hover::before {
-            border-width: 3px;
+
+        .changelog-button:hover:before {
+            transform: scale(2.5);
         }
     </style>
 </head>
 <body>
     <div class="loading"></div>
+    <div class="scroll-progress"></div>
     
     <header class="header">
         <div class="container">
@@ -2408,9 +2204,14 @@
                     <img src="src/logo-red.png" alt="Misaki-Module Repo" class="logo">
                     <a href="https://github.com/misak10/mmrl-repo" class="logo-text">Misaki-Module Repo</a>
                 </div>
-                <button class="theme-switch" id="themeSwitch">
-                    <i class="ri-sun-line"></i>
-                </button>
+                <div class="header-actions">
+                    <a href="https://t.me/module_update" class="telegram-button" target="_blank" title="加入Telegram频道">
+                        <i class="ri-telegram-fill"></i>
+                    </a>
+                    <button class="theme-switch" id="themeSwitch">
+                        <i class="ri-sun-line"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -2521,27 +2322,23 @@
         </div>
     </footer>
 
-    <!-- 更新日志模态框 -->
-    <div class="modal fade" id="changelogModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <!-- 添加模块更新日志模态框 -->
+    <div class="modal fade changelog-modal" id="changelogModal" tabindex="-1" aria-labelledby="changelogModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="changelogModalTitle">
-                        <i class="ri-file-list-3-line"></i>
-                        <span class="module-name">更新日志</span>
-                        <span class="version-tag" id="currentVersion"></span>
+                    <h5 class="modal-title" id="changelogModalLabel">
+                        <i class="ri-list-check-3"></i>
+                        <span>模块更新日志</span>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="versionSelector" class="version-selector d-none">
-                        <!-- 版本选项将由JS动态添加 -->
+                    <div class="version-nav" id="versionNav">
+                        <!-- 版本导航将由JavaScript动态生成 -->
                     </div>
-                    <div id="changelogContent">
-                        <div class="changelog-loading">
-                            <div class="spinner-border text-primary" role="status"></div>
-                            <p>正在加载更新日志...</p>
-                        </div>
+                    <div id="changelogContent" class="markdown-body">
+                        <!-- 更新日志内容将由JavaScript动态加载 -->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -2727,13 +2524,13 @@
                                title="${module.track?.source ? '查看源码' : '在 GitHub 上搜索相关仓库'}">
                                 <i class="${module.track?.source ? 'ri-code-line' : 'ri-search-line'}"></i>
                             </a>
-                            ${module.sortedVersions[0].changelog ? `
-                                <a href="${module.sortedVersions[0].changelog}" 
-                                   target="_blank" 
-                                   class="btn btn-icon"
-                                   title="查看更新日志">
+                            ${hasAnyChangelog(module) ? `
+                                <button class="btn btn-icon changelog-button" 
+                                   data-module-id="${module.id}"
+                                   title="查看更新日志"
+                                   onclick="showChangelogModal('${module.id}', '${module.name}')">
                                     <i class="ri-file-list-3-line"></i>
-                                </a>
+                                </button>
                             ` : ''}
                         </div>
                         ${module.sortedVersions.length > 1 ? `
@@ -2758,7 +2555,17 @@
                                                                         <div class="fw-medium">${version}</div>
                                                                         <small class="text-muted">${formatDate(ver.timestamp)}</small>
                                                                     </div>
-                                                                    ${ver.size ? `<span class="badge">${formatSize(ver.size)}</span>` : ''}
+                                                                    <div class="d-flex align-items-center gap-2">
+                                                                        ${ver.size ? `<span class="badge">${formatSize(ver.size)}</span>` : ''}
+                                                                        ${ver.changelog ? `
+                                                                            <button class="btn btn-sm btn-outline-secondary changelog-btn"
+                                                                                data-module-id="${module.id}"
+                                                                                data-version-index="${module.sortedVersions.indexOf(ver)}"
+                                                                                onclick="showVersionChangelog('${module.id}', '${module.name}', ${module.sortedVersions.indexOf(ver)})">
+                                                                                <i class="ri-file-list-line"></i>
+                                                                            </button>
+                                                                        ` : ''}
+                                                                    </div>
                                                                 </div>
                                                             </a>
                                                         `;
@@ -2781,6 +2588,184 @@
             
             // 使用 IntersectionObserver 优化滚动加载
             observeModules();
+        }
+
+        // 检查模块是否有任何版本包含更新日志
+        function hasAnyChangelog(module) {
+            return module.sortedVersions && module.sortedVersions.some(ver => ver.changelog);
+        }
+
+        // 显示更新日志模态框
+        async function showChangelogModal(moduleId, moduleName) {
+            // 获取模块数据
+            const module = window.currentModules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            // 排序版本
+            const sortedVersions = module.versions?.sort((a, b) => b.versionCode - a.versionCode) || [];
+            
+            // 更新模态框标题
+            const modalTitle = document.getElementById('changelogModalLabel');
+            modalTitle.innerHTML = `<i class="ri-list-check-3"></i> ${moduleName} 更新日志`;
+            
+            // 生成版本导航
+            const versionNav = document.getElementById('versionNav');
+            versionNav.innerHTML = '';
+            
+            // 仅显示有更新日志的版本
+            const versionsWithChangelog = sortedVersions.filter(ver => ver.changelog);
+            
+            versionsWithChangelog.forEach((ver, index) => {
+                const versionBtn = document.createElement('button');
+                versionBtn.className = `version-button ${index === 0 ? 'active' : ''}`;
+                versionBtn.dataset.url = ver.changelog;
+                versionBtn.dataset.version = ver.version;
+                versionBtn.dataset.index = index;
+                versionBtn.innerText = ver.version;
+                versionBtn.onclick = function() {
+                    document.querySelectorAll('.version-button').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    loadChangelog(ver.changelog);
+                };
+                versionNav.appendChild(versionBtn);
+            });
+            
+            // 加载第一个版本的更新日志
+            if (versionsWithChangelog.length > 0) {
+                loadChangelog(versionsWithChangelog[0].changelog);
+            } else {
+                // 如果没有版本有更新日志
+                document.getElementById('changelogContent').innerHTML = `<p>此模块没有可用的更新日志。</p>`;
+            }
+            
+            // 显示模态框
+            const changelogModal = new bootstrap.Modal(document.getElementById('changelogModal'));
+            changelogModal.show();
+        }
+        
+        // 直接显示特定版本的更新日志
+        async function showVersionChangelog(moduleId, moduleName, versionIndex) {
+            // 获取模块数据
+            const module = window.currentModules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            // 排序版本
+            const sortedVersions = module.versions?.sort((a, b) => b.versionCode - a.versionCode) || [];
+            
+            if (sortedVersions.length <= versionIndex) return;
+            
+            // 显示模态框，自动定位到指定版本
+            await showChangelogModal(moduleId, moduleName);
+            
+            // 选择特定版本
+            const versionBtns = document.querySelectorAll('.version-button');
+            versionBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // 找到对应的版本按钮并点击
+            const activeBtn = Array.from(versionBtns).find(btn => parseInt(btn.dataset.index) === versionIndex);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                loadChangelog(sortedVersions[versionIndex].changelog);
+            }
+        }
+        
+        // 加载更新日志内容
+        async function loadChangelog(url) {
+            // 显示加载动画
+            const changelogContent = document.getElementById('changelogContent');
+            changelogContent.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">加载中...</span>
+                    </div>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`无法加载更新日志 (${response.status})`);
+                }
+                
+                // 读取Markdown内容
+                const markdown = await response.text();
+                
+                // 简单的Markdown解析
+                const html = parseMarkdown(markdown);
+                
+                // 更新内容
+                changelogContent.innerHTML = html;
+                
+            } catch (error) {
+                console.error('加载更新日志失败:', error);
+                changelogContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="ri-error-warning-line me-2"></i>
+                        加载更新日志失败: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        // 简单的Markdown解析函数
+        function parseMarkdown(markdown) {
+            if (!markdown) return '<p>无内容</p>';
+            
+            // 处理标题
+            let html = markdown
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
+                .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
+                .replace(/^###### (.*$)/gm, '<h6>$1</h6>');
+            
+            // 处理粗体和斜体
+            html = html
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/\_\_(.+?)\_\_/g, '<strong>$1</strong>')
+                .replace(/\_(.+?)\_/g, '<em>$1</em>');
+            
+            // 处理链接
+            html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // 处理列表
+            html = html
+                .replace(/^\s*\-\s(.+?)$/gm, '<li>$1</li>')
+                .replace(/^\s*\*\s(.+?)$/gm, '<li>$1</li>')
+                .replace(/^\s*\d+\.\s(.+?)$/gm, '<li>$1</li>');
+            
+            // 将连续的li组合成列表
+            html = html
+                .replace(/(<li>.*<\/li>)\s*\n\s*(<li>)/g, '$1$2')
+                .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+            
+            // 处理代码块
+            html = html
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // 处理引用
+            html = html.replace(/^\>\s(.+?)$/gm, '<blockquote>$1</blockquote>');
+            
+            // 处理段落和换行
+            html = html
+                .replace(/\n\s*\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+            
+            // 包装在段落中
+            html = '<p>' + html + '</p>';
+            
+            // 清理多余的标签
+            html = html
+                .replace(/<\/p><p><ul>/g, '</p><ul>')
+                .replace(/<\/ul><\/p>/g, '</ul>')
+                .replace(/<\/p><p><blockquote>/g, '</p><blockquote>')
+                .replace(/<\/blockquote><\/p>/g, '</blockquote>');
+            
+            return html;
         }
 
         function getFeaturesList(features) {
@@ -2834,6 +2819,20 @@
                 document.documentElement.setAttribute('data-bs-theme', savedTheme);
                 icon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
             }
+
+            // 添加滚动进度条
+            const progressBar = document.querySelector('.scroll-progress');
+            if (progressBar) {
+                window.addEventListener('scroll', () => {
+                    const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                    progressBar.style.width = `${scrolled}%`;
+                }, { passive: true });
+            }
+
+            // 初始化模块更新日志模态框
+            window.showChangelogModal = showChangelogModal;
+            window.showVersionChangelog = showVersionChangelog;
+            window.loadChangelog = loadChangelog;
 
             // 初始加载模块数据
             try {
@@ -3054,148 +3053,186 @@
             initializeSearch();
             initImageLoading();
             initFilterPerformance();
-        });
-        
-        // 初始化页面加载进度显示
-        function initPageProgress() {
-            const progressBar = document.getElementById('loadingProgress');
-            let width = 0;
             
-            // 开始显示加载进度
-            const interval = setInterval(() => {
-                width += Math.random() * 10;
-                if (width > 90) {
-                    width = 90; // 最多加载到90%，等待实际内容加载完成
-                    clearInterval(interval);
-                }
-                progressBar.style.width = width + '%';
-            }, 100);
-            
-            // 页面完全加载后完成进度条
-            window.addEventListener('load', () => {
-                progressBar.style.width = '100%';
-                setTimeout(() => {
-                    progressBar.style.opacity = '0';
-                }, 500);
+            // 使用 requestIdleCallback 延迟加载非关键功能
+            requestIdleCallback(() => {
+                // 添加页面滚动进度指示器
+                const progressBar = document.createElement('div');
+                progressBar.className = 'scroll-progress';
+                document.body.appendChild(progressBar);
+                
+                window.addEventListener('scroll', () => {
+                    const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                    progressBar.style.width = `${scrolled}%`;
+                }, { passive: true });
             });
-        }
-
-        // 初始化模块加载器
-        function initModuleLoader() {
-            initializeFilters();
-            loadModules();
-            setupEventListeners();
-            initChangelogModal();
-        }
+        });
 
         // 优化图片加载
         function initImageLoading() {
-            // 使用 IntersectionObserver 懒加载图片
-            const imgObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        const dataSrc = img.getAttribute('data-src');
-                        if (dataSrc) {
-                            img.src = dataSrc;
-                            img.removeAttribute('data-src');
-                            img.classList.add('loaded');
-                        }
-                        imgObserver.unobserve(img);
-                    }
-                });
-            }, { rootMargin: '200px' });
-            
-            // 对所有懒加载图片应用观察器
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imgObserver.observe(img);
-            });
+            const logo = document.querySelector('.logo');
+            if (logo) {
+                logo.onerror = function() {
+                    this.classList.add('error');
+                    this.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' width=\'36\' height=\'36\'%3E%3Cpath fill=\'%23ef4444\' d=\'M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0-3a5 5 0 1 1 0-10 5 5 0 0 1 0 10z\'/%3E%3C/svg%3E';
+                };
+            }
         }
 
         // 优化分类和排序性能
         function initFilterPerformance() {
-            // 使用防抖函数减少频繁筛选
-            const searchInput = document.getElementById('moduleSearch');
-            if (searchInput) {
-                const originalHandler = searchInput.oninput;
-                searchInput.oninput = null;
-                
-                searchInput.addEventListener('input', debounce(() => {
-                    filterModules();
-                }, 300));
-            }
-        }
-        
-        // 添加移动端触摸支持
-        function initTouchSupport() {
-            // 移动端卡片触摸动效
-            if ('ontouchstart' in window) {
-                const cards = document.querySelectorAll('.module-card');
-                
-                cards.forEach(card => {
-                    card.addEventListener('touchstart', function() {
-                        this.classList.add('touch-active');
-                    }, { passive: true });
-                    
-                    card.addEventListener('touchend', function() {
-                        this.classList.remove('touch-active');
-                    }, { passive: true });
-                    
-                    card.addEventListener('touchcancel', function() {
-                        this.classList.remove('touch-active');
-                    }, { passive: true });
-                });
-                
-                // 版本选择器横向滑动优化
-                const versionSelectors = document.querySelectorAll('.version-selector');
-                
-                versionSelectors.forEach(selector => {
-                    let startX, isDragging = false, startScrollLeft;
-                    
-                    selector.addEventListener('touchstart', function(e) {
-                        isDragging = true;
-                        startX = e.touches[0].pageX;
-                        startScrollLeft = this.scrollLeft;
-                    }, { passive: true });
-                    
-                    selector.addEventListener('touchmove', function(e) {
-                        if (!isDragging) return;
+            const dropdownButtons = document.querySelectorAll('.btn-outline-secondary[data-bs-toggle="dropdown"]');
+            const dropdownMenus = document.querySelectorAll('.dropdown-menu');
+            
+            // 预先缓存下拉菜单选项
+            const dropdownCache = new Map();
+            
+            dropdownMenus.forEach(menu => {
+                const items = Array.from(menu.querySelectorAll('.dropdown-item'));
+                dropdownCache.set(menu, items);
+            });
+
+            // 优化下拉菜单点击事件
+            dropdownMenus.forEach(menu => {
+                menu.addEventListener('click', (e) => {
+                    if (e.target.matches('.dropdown-item')) {
+                        e.preventDefault();
+                        const button = menu.previousElementSibling;
+                        const select = menu.nextElementSibling;
                         
-                        const x = e.touches[0].pageX;
-                        const moveX = x - startX;
-                        this.scrollLeft = startScrollLeft - moveX;
-                    }, { passive: true });
-                    
-                    selector.addEventListener('touchend', function() {
-                        isDragging = false;
-                    }, { passive: true });
-                    
-                    selector.addEventListener('touchcancel', function() {
-                        isDragging = false;
-                    }, { passive: true });
+                        // 使用 requestAnimationFrame 优化视觉更新
+                        requestAnimationFrame(() => {
+                            button.childNodes[0].textContent = e.target.textContent;
+                            select.value = e.target.dataset.value;
+                            select.dispatchEvent(new Event('change'));
+                        });
+                    }
+                });
+            });
+
+            // 优化筛选逻辑
+            function filterModules() {
+                if (!window.currentModules || !Array.isArray(window.currentModules)) {
+                    return;
+                }
+
+                const searchInput = document.getElementById('moduleSearch');
+                const categoryFilter = document.getElementById('categoryFilter');
+                const sortOrder = document.getElementById('sortOrder');
+                const featureFilter = document.getElementById('featureFilter');
+
+                const searchTerm = searchInput.value.toLowerCase();
+                const category = categoryFilter.value;
+                const sort = sortOrder.value;
+                const feature = featureFilter.value;
+
+                let filtered = window.currentModules.filter(module => {
+                    // 搜索条件匹配
+                    const searchMatch = !searchTerm || 
+                        module.name.toLowerCase().includes(searchTerm) ||
+                        module.description.toLowerCase().includes(searchTerm) ||
+                        module.author.toLowerCase().includes(searchTerm);
+
+                    // 分类匹配 - 检查categories数组
+                    const categoryMatch = !category || 
+                        (module.categories && module.categories.some(cat => 
+                            cat.toLowerCase() === category.toLowerCase()
+                        ));
+
+                    // 功能特性匹配
+                    const featureMatch = !feature || 
+                        (module.features && module.features[feature] === true);
+
+                    return searchMatch && categoryMatch && featureMatch;
+                });
+
+                // 排序逻辑
+                filtered.sort((a, b) => {
+                    switch(sort) {
+                        case 'update':
+                            return (b.versions[0]?.timestamp || 0) - (a.versions[0]?.timestamp || 0);
+                        case 'name':
+                            return a.name.localeCompare(b.name, 'zh-CN');
+                        case 'author':
+                            return a.author.localeCompare(b.author, 'zh-CN');
+                        default:
+                            return 0;
+                    }
+                });
+
+                renderModules(filtered);
+            }
+
+            window.filterModules = filterModules;
+        }
+
+        // 优化主题切换函数
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-bs-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            
+            // 添加过渡类
+            document.body.classList.add('theme-transitioning');
+            
+            // 使用 requestAnimationFrame 延迟主题切换
+            requestAnimationFrame(() => {
+                html.setAttribute('data-bs-theme', newTheme);
+                icon.className = isDark ? 'ri-moon-line' : 'ri-sun-line';
+                localStorage.setItem('theme', newTheme);
+
+                // 300ms 后移除过渡类
+                setTimeout(() => {
+                    document.body.classList.remove('theme-transitioning');
+                }, 300);
+            });
+        }
+
+        // 优化主题初始化
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            const icon = document.querySelector('#themeSwitch i');
+            if (icon) {
+                icon.className = theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line';
+            }
+
+            // 监听系统主题变化
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addListener((e) => {
+                if (!localStorage.getItem('theme')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-bs-theme', newTheme);
+                }
+            });
+        }
+
+        // 在 VirtualList 类中添加主题更新方法
+        class VirtualList {
+            // ... existing VirtualList code ...
+
+            updateTheme() {
+                if (!this.visibleItems.size) return;
+
+                const cards = Array.from(this.visibleItems.values());
+                
+                // 批量更新可见卡片
+                requestAnimationFrame(() => {
+                    cards.forEach(card => {
+                        card.style.willChange = 'transform, background-color, border-color';
+                    });
+
+                    // 主题切换完成后恢复
+                    setTimeout(() => {
+                        cards.forEach(card => {
+                            card.style.willChange = 'transform';
+                        });
+                    }, 300);
                 });
             }
-        }
-        
-        // 初始化UI交互
-        function initUI() {
-            // 监听滚动事件，显示/隐藏顶部阴影和返回顶部按钮
-// ... existing code ...
-            
-            // 初始化加载时添加视差效果
-            addParallaxEffect();
-            
-            // 初始化卡片悬浮效果
-            initTiltEffect();
-            
-            // 初始化触摸支持
-            initTouchSupport();
-            
-            // 初始化图片加载
-            initImageLoading();
-            
-            // 初始化筛选性能优化
-            initFilterPerformance();
         }
 
         // 初始化主题切换
@@ -3542,293 +3579,6 @@
                 }
             });
         });
-
-        // 初始化更新日志模态框
-        function initChangelogModal() {
-            const changelogModal = new bootstrap.Modal(document.getElementById('changelogModal'));
-            const moduleCache = {}; // 缓存模块数据
-            
-            // 点击更新日志按钮时触发
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.changelog-btn')) {
-                    const btn = e.target.closest('.changelog-btn');
-                    const moduleName = btn.getAttribute('data-module-name');
-                    const moduleId = btn.getAttribute('data-module-id');
-                    const moduleVersion = btn.getAttribute('data-module-version');
-                    const versionCode = btn.getAttribute('data-version-code');
-                    
-                    handleChangelogButtonClick(moduleName, moduleId, moduleVersion, versionCode);
-                }
-            });
-            
-            // 处理更新日志按钮点击
-            async function handleChangelogButtonClick(moduleName, moduleId, moduleVersion, versionCode) {
-                const modalTitle = document.querySelector('#changelogModal .module-name');
-                const currentVersionTag = document.getElementById('currentVersion');
-                const changelogContent = document.getElementById('changelogContent');
-                const versionSelector = document.getElementById('versionSelector');
-                
-                // 设置标题
-                modalTitle.textContent = moduleName;
-                currentVersionTag.textContent = moduleVersion;
-                
-                // 重置内容和版本选择器
-                changelogContent.innerHTML = `
-                    <div class="changelog-loading">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p>正在加载更新日志...</p>
-                    </div>
-                `;
-                versionSelector.innerHTML = '';
-                versionSelector.classList.add('d-none');
-                
-                // 显示模态框
-                changelogModal.show();
-                
-                try {
-                    // 获取模块完整信息
-                    const moduleInfo = await getModuleInfo(moduleId);
-                    
-                    if (!moduleInfo) {
-                        throw new Error('无法获取模块信息');
-                    }
-                    
-                    // 设置版本选择器
-                    setupVersionSelector(moduleInfo, moduleVersion);
-                    
-                    // 加载选中版本的更新日志
-                    await loadChangelogForVersion(moduleInfo, moduleVersion);
-                } catch (error) {
-                    console.error('更新日志加载失败:', error);
-                    changelogContent.innerHTML = `
-                        <div class="changelog-error">
-                            <i class="ri-error-warning-line"></i>
-                            <p>加载更新日志失败: ${error.message}</p>
-                        </div>
-                    `;
-                }
-            }
-            
-            // 设置版本选择器
-            function setupVersionSelector(moduleInfo, currentVersion) {
-                const versionSelector = document.getElementById('versionSelector');
-                
-                // 如果只有一个版本，不显示选择器
-                if (moduleInfo.versions.length <= 1) {
-                    versionSelector.classList.add('d-none');
-                    return;
-                }
-                
-                // 清空并准备版本选择器
-                versionSelector.innerHTML = '';
-                versionSelector.classList.remove('d-none');
-                
-                // 按时间戳降序排序版本
-                const sortedVersions = [...moduleInfo.versions].sort((a, b) => b.timestamp - a.timestamp);
-                
-                // 添加每个版本选项
-                sortedVersions.forEach((version, index) => {
-                    const isActive = version.version === currentVersion;
-                    const versionDate = formatDate(version.timestamp, true);
-                    
-                    const versionOption = document.createElement('button');
-                    versionOption.className = `version-option ${isActive ? 'active' : ''}`;
-                    versionOption.setAttribute('data-version', version.version);
-                    versionOption.style.setProperty('--option-index', index); // 设置动画延迟顺序
-                    versionOption.innerHTML = `
-                        ${version.version}
-                        <span class="version-date">${versionDate}</span>
-                    `;
-                    
-                    // 点击版本切换事件
-                    versionOption.addEventListener('click', async function() {
-                        // 更新选中状态
-                        document.querySelectorAll('.version-option').forEach(opt => {
-                            opt.classList.remove('active');
-                        });
-                        versionOption.classList.add('active');
-                        
-                        // 更新当前版本标签
-                        document.getElementById('currentVersion').textContent = version.version;
-                        
-                        // 加载选中版本的更新日志
-                        await loadChangelogForVersion(moduleInfo, version.version);
-                    });
-                    
-                    versionSelector.appendChild(versionOption);
-                });
-            }
-            
-            // 为指定版本加载更新日志
-            async function loadChangelogForVersion(moduleInfo, versionToLoad) {
-                const changelogContent = document.getElementById('changelogContent');
-                
-                // 显示加载状态
-                changelogContent.innerHTML = `
-                    <div class="changelog-loading">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p>正在加载更新日志...</p>
-                    </div>
-                `;
-                
-                try {
-                    // 找到对应版本信息
-                    const versionInfo = moduleInfo.versions.find(v => v.version === versionToLoad);
-                    if (!versionInfo || !versionInfo.changelog) {
-                        throw new Error('该版本没有更新日志');
-                    }
-                    
-                    // 获取更新日志内容
-                    const changelog = await fetchChangelog(versionInfo.changelog);
-                    
-                    // 渲染更新日志
-                    changelogContent.innerHTML = `
-                        <div class="changelog-content">
-                            ${parseMarkdown(changelog)}
-                        </div>
-                    `;
-                } catch (error) {
-                    console.error('获取更新日志失败:', error);
-                    changelogContent.innerHTML = `
-                        <div class="changelog-error">
-                            <i class="ri-error-warning-line"></i>
-                            <p>${error.message}</p>
-                        </div>
-                    `;
-                }
-            }
-            
-            // 获取模块完整信息
-            async function getModuleInfo(moduleId) {
-                // 如果缓存中已有此模块信息则直接返回
-                if (moduleCache[moduleId]) {
-                    return moduleCache[moduleId];
-                }
-                
-                // 从当前加载的模块中查找
-                if (window.currentModules) {
-                    const moduleInfo = window.currentModules.find(m => m.id === moduleId);
-                    if (moduleInfo) {
-                        moduleCache[moduleId] = moduleInfo;
-                        return moduleInfo;
-                    }
-                }
-                
-                // 如果当前加载的模块中没有，则请求API获取
-                try {
-                    const data = await moduleCache.get();
-                    const moduleInfo = data.modules.find(m => m.id === moduleId);
-                    if (moduleInfo) {
-                        moduleCache[moduleId] = moduleInfo;
-                        return moduleInfo;
-                    }
-                } catch (error) {
-                    console.error('无法获取模块信息:', error);
-                    return null;
-                }
-                
-                return null;
-            }
-            
-            // 获取更新日志内容
-            async function fetchChangelog(changelogUrl) {
-                try {
-                    const response = await fetch(changelogUrl);
-                    if (!response.ok) {
-                        throw new Error('无法加载更新日志');
-                    }
-                    return await response.text();
-                } catch (error) {
-                    console.error('获取更新日志失败:', error);
-                    throw error;
-                }
-            }
-            
-            // 格式化日期函数的增强版本
-            function formatDate(timestamp, shortFormat = false) {
-                if (!timestamp) return '未知时间';
-                
-                const date = new Date(timestamp * 1000);
-                const year = date.getFullYear();
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                
-                if (shortFormat) {
-                    return `${year}-${month}-${day}`;
-                }
-                
-                const hours = date.getHours().toString().padStart(2, '0');
-                const minutes = date.getMinutes().toString().padStart(2, '0');
-                return `${year}-${month}-${day} ${hours}:${minutes}`;
-            }
-            
-            // 解析Markdown
-            function parseMarkdown(markdown) {
-                if (!markdown || typeof markdown !== 'string') {
-                    return '<div class="alert alert-warning">无效的Markdown内容</div>';
-                }
-                
-                if (markdown.trim().length === 0) {
-                    return '<div class="alert alert-info">更新日志为空</div>';
-                }
-                
-                // 转义HTML特殊字符
-                const escapeHtml = (text) => {
-                    return text
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#039;');
-                };
-                
-                // 简单的Markdown解析
-                let html = escapeHtml(markdown)
-                    // 标题
-                    .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
-                    .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
-                    .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
-                    .replace(/^#### (.*?)$/gm, '<h4>$1</h4>')
-                    
-                    // 列表
-                    .replace(/^\* (.*?)$/gm, '<li>$1</li>')
-                    .replace(/^- (.*?)$/gm, '<li>$1</li>')
-                    .replace(/^(\d+)\. (.*?)$/gm, '<li>$2</li>')
-                    
-                    // 段落
-                    .replace(/\n\n/g, '</p><p>')
-                    
-                    // 粗体和斜体
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/__(.*?)__/g, '<strong>$1</strong>')
-                    .replace(/_(.*?)_/g, '<em>$1</em>')
-                    
-                    // 链接
-                    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
-                    
-                    // 图片
-                    .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="img-fluid rounded my-3">')
-                    
-                    // 代码
-                    .replace(/`(.*?)`/g, '<code>$1</code>')
-                    
-                    // 代码块
-                    .replace(/```(.*?)\n([\s\S]*?)```/g, '<pre class="bg-light p-3 rounded"><code>$2</code></pre>');
-                
-                // 包装列表项
-                html = html.replace(/<li>.*?<\/li>(\s*<li>.*?<\/li>)*/g, (match) => {
-                    return '<ul class="mb-4">' + match + '</ul>';
-                });
-                
-                // 包装在段落标签中
-                if (!html.startsWith('<')) {
-                    html = '<p>' + html + '</p>';
-                }
-                
-                return html;
-            }
-        }
     </script>
 </body>
 </html> 
