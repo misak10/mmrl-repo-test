@@ -1,0 +1,22 @@
+{
+    "id": "fas-rs",
+    "enable": true,
+    "verified": false,
+    "update_to": "https://github.com/shadow3aaa/fas-rs/raw/refs/heads/master/update/update.json",
+    "license": "GPL-3.0",
+    "homepage": "",
+    "source": "https://github.com/shadow3aaa/fas-rs",
+    "support": "https://github.com/shadow3aaa/fas-rs/issues",
+    "donate": "",
+    "categories": [
+        "Theme",
+        "Utility",
+        "System",
+        "Gaming",
+        "Performance",
+        "Framework",
+        "Script"
+    ],
+    "readme": "https://raw.githubusercontent.com/shadow3aaa/fas-rs/main/README.md",
+    "version": "v4.8.0"
+}
