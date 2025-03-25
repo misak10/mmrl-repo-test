@@ -2442,6 +2442,8 @@
         .dropdown-toggle {
             transition: none !important;
             will-change: auto !important;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .dropdown-menu {
@@ -2450,8 +2452,13 @@
             transition: opacity 0.15s ease, transform 0.15s ease !important;
             margin-top: 0.25rem !important;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            backface-visibility: hidden;
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
-        
+
         /* 自定义下拉菜单触发器 */
         .custom-dropdown-toggle {
             -webkit-tap-highlight-color: transparent;
@@ -2461,18 +2468,20 @@
         
         /* 修复Bootstrap下拉菜单闪烁问题 */
         .dropdown-menu.fade {
-            transition: transform 0.2s ease, opacity 0.2s ease !important;
+            transition: transform 0.15s ease, opacity 0.15s ease !important;
             transform-origin: top center;
-            transform: scaleY(0.7) translateY(-10px);
+            transform: scaleY(0.9) translateY(-5px);
             opacity: 0;
             display: block;
             margin: 0;
             border: 0;
+            pointer-events: none;
         }
         
         .dropdown-menu.fade.show {
             transform: scaleY(1) translateY(0);
             opacity: 1;
+            pointer-events: auto;
         }
 
         /* 提高模态框z-index以避免被其他元素遮挡 */
@@ -3051,6 +3060,49 @@
             transform: scale(1.1);
           }
         }
+
+        @keyframes dropdownFadeIn {
+            0% {
+                opacity: 0;
+                transform: scaleY(0.9) translateY(-5px);
+            }
+            100% {
+                opacity: 1;
+                transform: scaleY(1) translateY(0);
+            }
+        }
+        
+        /* 优化下拉菜单项的动画 */
+        .dropdown-item {
+            animation-duration: 0.2s;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            animation-fill-mode: both;
+        }
+        
+        .dropdown-menu.show .dropdown-item {
+            animation-name: dropdownItemIn;
+        }
+        
+        @keyframes dropdownItemIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 顺序显示下拉项 */
+        .dropdown-menu.show .dropdown-item:nth-child(1) { animation-delay: 0.03s; }
+        .dropdown-menu.show .dropdown-item:nth-child(2) { animation-delay: 0.06s; }
+        .dropdown-menu.show .dropdown-item:nth-child(3) { animation-delay: 0.09s; }
+        .dropdown-menu.show .dropdown-item:nth-child(4) { animation-delay: 0.12s; }
+        .dropdown-menu.show .dropdown-item:nth-child(5) { animation-delay: 0.15s; }
+        .dropdown-menu.show .dropdown-item:nth-child(6) { animation-delay: 0.18s; }
+        .dropdown-menu.show .dropdown-item:nth-child(7) { animation-delay: 0.21s; }
+        .dropdown-menu.show .dropdown-item:nth-child(8) { animation-delay: 0.24s; }
     </style>
 </head>
 <body>
@@ -3457,6 +3509,9 @@
 
         // 显示更新日志模态框
         function showChangelogModal(moduleId, moduleName) {
+            // 保存当前模块ID，供加载更新日志时使用
+            window.currentModuleId = moduleId;
+            
             // 不使用Bootstrap模态框，改用原生实现
             const isMobile = window.innerWidth <= 768;
             
@@ -3721,75 +3776,86 @@
         
         // 模拟获取更新日志数据
         async function fetchModuleChangelog(moduleId) {
-            // 延迟模拟网络请求
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // 获取模块数据
+            const module = window.currentModules.find(m => m.id === moduleId);
+            if (!module || !module.versions || module.versions.length === 0) {
+                return [];
+            }
             
-            // 模拟的更新日志数据
-            const mockChangelogs = {
-                'module1': [
-                    {
-                        version: 'v2.1.0',
-                        date: '2023-12-15',
-                        changes: [
-                            '修复了某些设备上无法正常启动的问题',
-                            '优化了内存占用，提高了性能',
-                            '新增了对Android 14的支持'
-                        ]
-                    },
-                    {
-                        version: 'v2.0.0',
-                        date: '2023-11-01',
-                        changes: [
-                            '全新的用户界面设计',
-                            '增加了黑暗模式支持',
-                            '支持更多自定义选项'
-                        ]
-                    },
-                    {
-                        version: 'v1.5.0',
-                        date: '2023-09-10',
-                        changes: [
-                            '修复了与其他模块的兼容性问题',
-                            '增强了稳定性',
-                            '更新了底层库版本'
-                        ]
+            try {
+                // 从实际模块版本中构建更新日志数据
+                const changelogData = [];
+                
+                // 获取所有版本的更新日志
+                for (const ver of module.versions) {
+                    if (!ver.changelog) continue;
+                    
+                    try {
+                        // 尝试加载更新日志内容
+                        const response = await fetch(ver.changelog);
+                        if (!response.ok) continue;
+                        
+                        const content = await response.text();
+                        if (!content || content.trim() === '' || content.includes('暂无更新日志')) continue;
+                        
+                        const date = new Date(ver.timestamp * 1000);
+                        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                        
+                        // 提取更新内容
+                        const changes = extractChangesFromMarkdown(content);
+                        
+                        if (changes.length > 0) {
+                            changelogData.push({
+                                version: ver.version.startsWith('v') ? ver.version : `v${ver.version}`,
+                                date: formattedDate,
+                                changes: changes
+                            });
+                        }
+                    } catch (error) {
+                        console.warn(`无法加载模块 ${moduleId} 版本 ${ver.version} 的更新日志:`, error);
+                        continue;
                     }
-                ],
-                'module2': [
-                    {
-                        version: 'v3.2.1',
-                        date: '2023-12-20',
-                        changes: [
-                            '修复了闪退问题',
-                            '提高了电池效率',
-                            '优化了后台运行机制'
-                        ]
-                    },
-                    {
-                        version: 'v3.2.0',
-                        date: '2023-11-15',
-                        changes: [
-                            '新增了快速设置面板',
-                            '支持更多设备型号',
-                            '修复了已知问题'
-                        ]
-                    }
-                ],
-                'module3': [
-                    {
-                        version: 'v1.0.1',
-                        date: '2023-12-10',
-                        changes: [
-                            '首个稳定版本发布',
-                            '支持基础功能',
-                            '适配主流设备'
-                        ]
-                    }
-                ]
-            };
+                }
+                
+                return changelogData;
+            } catch (error) {
+                console.error('获取更新日志失败:', error);
+                return [];
+            }
+        }
+        
+        // 从Markdown中提取更新内容
+        function extractChangesFromMarkdown(markdown) {
+            const changes = [];
             
-            // 返回对应模块的更新日志，如果不存在则返回空数组
-            return mockChangelogs[moduleId] || [];
+            // 尝试提取列表项
+            const listItemRegex = /^\s*[\-\*]\s+(.+)$/gm;
+            let match;
+            
+            while ((match = listItemRegex.exec(markdown)) !== null) {
+                if (match[1] && match[1].trim() !== '') {
+                    changes.push(match[1].trim());
+                }
+            }
+            
+            // 如果没有提取到列表项，尝试提取段落
+            if (changes.length === 0) {
+                const lines = markdown.split('\n').map(line => line.trim()).filter(line => line !== '');
+                
+                for (const line of lines) {
+                    // 跳过标题行和其他特殊格式
+                    if (line.startsWith('#') || line.startsWith('>') || line.startsWith('```')) {
+                        continue;
+                    }
+                    
+                    changes.push(line);
+                    
+                    // 限制提取的行数
+                    if (changes.length >= 10) break;
+                }
+            }
+            
+            return changes;
         }
         
         // 直接显示特定版本的更新日志
@@ -3836,6 +3902,17 @@
                 // 检查URL是否有效
                 if (!url || url.trim() === '') {
                     throw new Error('无效的更新日志链接');
+                }
+                
+                // 从模块数据中查找对应版本
+                const moduleId = window.currentModuleId;
+                const module = window.currentModules.find(m => m.id === moduleId);
+                
+                if (module) {
+                    const version = module.versions.find(v => v.changelog === url);
+                    if (version) {
+                        console.log(`正在加载模块 ${moduleId} 版本 ${version.version} 的更新日志...`);
+                    }
                 }
                 
                 const response = await fetch(url);
@@ -4338,24 +4415,34 @@
                         dropdownButton.childNodes[0].textContent = this.textContent;
                         select.value = value;
                         
-                        // 触发过滤
-                        filterModules();
-                    });
-
-                    // 移动端处理
-                    if (window.innerWidth <= 768) {
-                        const dropdown = this.closest('.dropdown-menu');
-                        if (dropdown) {
-                            dropdown.classList.remove('show');
-                            // 避免使用transitionend事件，直接清理
-                            setTimeout(() => {
-                                document.body.classList.remove('modal-open');
-                                const scrollY = parseInt(document.body.style.top || '0');
-                                document.body.style.top = '';
-                                window.scrollTo(0, -scrollY);
-                            }, 100);
+                        // 准备筛选结果但不立即更新DOM
+                        prepareFilteredModules();
+                        
+                        // 关闭下拉菜单
+                        if (window.innerWidth <= 768) {
+                            const dropdown = this.closest('.dropdown-menu');
+                            if (dropdown) {
+                                dropdown.classList.remove('show');
+                                // 避免使用transitionend事件，直接清理
+                                setTimeout(() => {
+                                    document.body.classList.remove('modal-open');
+                                    const scrollY = parseInt(document.body.style.top || '0');
+                                    document.body.style.top = '';
+                                    window.scrollTo(0, -scrollY);
+                                    
+                                    // 等待滚动完成后再触发过滤，减少卡顿感
+                                    setTimeout(() => {
+                                        filterModules();
+                                    }, 50);
+                                }, 100);
+                            }
+                        } else {
+                            // 在下一个动画帧中触发过滤，避免渲染阻塞
+                            requestAnimationFrame(() => {
+                                filterModules();
+                            });
                         }
-                    }
+                    });
                 });
             });
 
@@ -4364,8 +4451,14 @@
                 // 预加载筛选结果
                 btn.addEventListener('mouseenter', function() {
                     // 提前准备筛选数据，但不更新DOM
-                    prepareFilteredModules();
+                    setTimeout(() => prepareFilteredModules(), 0);
                 });
+                
+                // 触摸开始时预加载
+                btn.addEventListener('touchstart', function() {
+                    // 立即开始准备数据
+                    prepareFilteredModules();
+                }, { passive: true });
                 
                 btn.addEventListener('click', function() {
                     if (window.innerWidth <= 768) {
@@ -4402,6 +4495,25 @@
             document.querySelectorAll('select').forEach(select => {
                 select.addEventListener('change', filterModules);
             });
+
+            // 预加载筛选结果
+            setTimeout(() => {
+                prepareFilteredModules();
+                
+                // 初始化下拉菜单的渲染，避免首次点击时的卡顿
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.style.display = 'block';
+                    menu.style.visibility = 'hidden';
+                    menu.style.opacity = '0';
+                    
+                    // 在下一帧恢复正常状态
+                    requestAnimationFrame(() => {
+                        menu.style.removeProperty('display');
+                        menu.style.removeProperty('visibility');
+                        menu.style.removeProperty('opacity');
+                    });
+                });
+            }, 1000);
         });
 
         function isOutdated(timestamp) {
