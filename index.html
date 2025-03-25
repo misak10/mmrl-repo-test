@@ -3291,21 +3291,76 @@
 
         // 添加更新日志功能
         function initChangelogModal() {
-            // 确保加载Bootstrap的Modal组件
-            if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
-                console.error('Bootstrap Modal组件未加载');
-                return;
-            }
-            
-            // 获取模态框元素
+            // 确保模态框元素存在
             const modalElement = document.getElementById('changelogModal');
             if (!modalElement) {
                 console.error('找不到更新日志模态框元素');
                 return;
             }
             
-            // 初始化Bootstrap模态框
-            const changelogModal = new bootstrap.Modal(modalElement);
+            // 直接初始化模态框
+            let changelogModal;
+            
+            // 尝试两种方式初始化模态框
+            try {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    changelogModal = new bootstrap.Modal(modalElement);
+                    console.log('使用Bootstrap初始化模态框成功');
+                } else {
+                    console.warn('Bootstrap未加载，尝试使用jQuery');
+                    if (typeof $ !== 'undefined' && typeof $.fn.modal !== 'undefined') {
+                        $(modalElement).modal({
+                            backdrop: true,
+                            keyboard: true,
+                            focus: true,
+                            show: false
+                        });
+                        changelogModal = {
+                            show: function() { $(modalElement).modal('show'); },
+                            hide: function() { $(modalElement).modal('hide'); }
+                        };
+                        console.log('使用jQuery初始化模态框成功');
+                    } else {
+                        throw new Error('未找到可用的模态框库');
+                    }
+                }
+            } catch (error) {
+                console.error('初始化模态框失败:', error);
+                
+                // 创建一个基础的模态框显示函数
+                changelogModal = {
+                    show: function() { 
+                        modalElement.style.display = 'block'; 
+                        modalElement.classList.add('show');
+                        document.body.classList.add('modal-open');
+                        
+                        // 创建背景蒙层
+                        const backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        document.body.appendChild(backdrop);
+                    },
+                    hide: function() { 
+                        modalElement.style.display = 'none'; 
+                        modalElement.classList.remove('show');
+                        document.body.classList.remove('modal-open');
+                        
+                        // 移除背景蒙层
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) {
+                            backdrop.remove();
+                        }
+                    }
+                };
+                console.log('创建了基础模态框函数');
+            }
+            
+            // 为关闭按钮添加事件监听器
+            const closeButton = modalElement.querySelector('.btn-close, [data-bs-dismiss="modal"]');
+            if (closeButton) {
+                closeButton.addEventListener('click', function() {
+                    changelogModal.hide();
+                });
+            }
             
             // 阻止事件冒泡，确保点击更新日志按钮时不会触发其他操作
             document.addEventListener('click', function(e) {
@@ -3313,106 +3368,81 @@
                 if (button) {
                     e.preventDefault();
                     e.stopPropagation();
+                    
+                    // 在这里直接处理按钮点击事件
+                    handleChangelogButtonClick(button, changelogModal);
                 }
             }, true);
             
-            // 委托事件监听器到文档，以处理动态添加的按钮
-            document.addEventListener('click', async function(e) {
-                if (e.target.closest('.changelog-btn')) {
-                    const button = e.target.closest('.changelog-btn');
-                    const moduleName = button.dataset.moduleName;
-                    const moduleVersion = button.dataset.moduleVersion;
-                    const versionCode = button.dataset.versionCode;
-                    
-                    try {
-                        // 显示加载指示器
-                        document.getElementById('changelogContent').innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">加载中...</span></div><p class="mt-2">正在加载更新日志...</p></div>';
-                        
-                        // 显示模态框
-                        changelogModal.show();
-                        
-                        // 更新模态框标题
-                        document.getElementById('changelogModalLabel').textContent = `${moduleName} ${moduleVersion} 更新日志`;
-                        
-                        // 记录请求参数
-                        console.log('更新日志请求参数:', {
-                            moduleName,
-                            moduleVersion,
-                            versionCode
-                        });
-                        
-                        // 构造更新日志文件路径 (简化逻辑，直接使用已知的文件格式)
-                        let modulePath = moduleName.toLowerCase();
-                        
-                        // 处理可能包含的斜杠
-                        if (modulePath.includes('/')) {
-                            modulePath = modulePath.split('/').pop();
-                        }
-                        
-                        // 确保版本号格式正确
-                        let versionForPath = moduleVersion;
-                        if (!versionForPath.startsWith('v')) {
-                            versionForPath = `v${versionForPath}`;
-                        }
-                        
-                        // 使用已知的文件格式构建路径
-                        const changelogPath = `modules/${modulePath}/${versionForPath}_${versionCode}.md`;
-                        
-                        console.log('加载更新日志路径:', changelogPath);
-                        
-                        // 使用XMLHttpRequest而不是fetch，以避免可能的缓存问题
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('GET', changelogPath, true);
-                        
-                        xhr.onload = function() {
-                            if (xhr.status === 200) {
-                                // 成功加载
-                                const markdown = xhr.responseText;
-                                const html = parseMarkdown(markdown);
-                                
-                                document.getElementById('changelogContent').innerHTML = html;
-                                console.log('成功加载更新日志:', changelogPath);
-                                
-                                // 如果是移动设备，调整滚动位置
-                                if (window.innerWidth < 768) {
-                                    setTimeout(() => {
-                                        document.getElementById('changelogContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    }, 100);
-                                }
-                            } else {
-                                // 加载失败，显示错误信息
-                                console.error(`加载更新日志失败 (${xhr.status}):`, changelogPath);
-                                
-                                // 显示文件夹内容作为帮助
-                                showFallbackContent(modulePath, versionForPath, versionCode, moduleName, moduleVersion);
-                            }
-                        };
-                        
-                        xhr.onerror = function() {
-                            console.error('加载更新日志请求错误:', changelogPath);
-                            showFallbackContent(modulePath, versionForPath, versionCode, moduleName, moduleVersion);
-                        };
-                        
-                        xhr.send();
-                    } catch (error) {
-                        console.error('更新日志加载错误:', error);
-                        document.getElementById('changelogContent').innerHTML = `
-                            <div class="alert alert-danger" role="alert">
-                                <h4 class="alert-heading">无法加载更新日志</h4>
-                                <p>${error.message || '请检查网络连接或稍后再试'}</p>
-                                <div class="mt-3">
-                                    <p>请求的信息:</p>
-                                    <ul>
-                                        <li>模块名称: ${moduleName}</li>
-                                        <li>版本: ${moduleVersion}</li>
-                                        <li>版本代码: ${versionCode}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        `;
-                    }
+            // 将点击处理逻辑分离为独立函数
+            function handleChangelogButtonClick(button, modal) {
+                const moduleName = button.dataset.moduleName;
+                const moduleVersion = button.dataset.moduleVersion;
+                const versionCode = button.dataset.versionCode;
+                
+                console.log('更新日志按钮点击:', moduleName, moduleVersion, versionCode);
+                
+                // 显示加载指示器
+                document.getElementById('changelogContent').innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">加载中...</span></div><p class="mt-2">正在加载更新日志...</p></div>';
+                
+                // 显示模态框
+                modal.show();
+                
+                // 更新模态框标题
+                document.getElementById('changelogModalLabel').textContent = `${moduleName} ${moduleVersion} 更新日志`;
+                
+                // 构造更新日志文件路径
+                let modulePath = moduleName.toLowerCase();
+                if (modulePath.includes('/')) {
+                    modulePath = modulePath.split('/').pop();
                 }
-            });
+                
+                // 确保版本号格式正确
+                let versionForPath = moduleVersion;
+                if (!versionForPath.startsWith('v')) {
+                    versionForPath = `v${versionForPath}`;
+                }
+                
+                // 使用已知的文件格式构建路径
+                const changelogPath = `modules/${modulePath}/${versionForPath}_${versionCode}.md`;
+                
+                console.log('加载更新日志路径:', changelogPath);
+                
+                // 使用XMLHttpRequest加载文件
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', changelogPath, true);
+                
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // 成功加载
+                        const markdown = xhr.responseText;
+                        const html = parseMarkdown(markdown);
+                        
+                        document.getElementById('changelogContent').innerHTML = html;
+                        console.log('成功加载更新日志:', changelogPath);
+                        
+                        // 如果是移动设备，调整滚动位置
+                        if (window.innerWidth < 768) {
+                            setTimeout(() => {
+                                document.getElementById('changelogContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                        }
+                    } else {
+                        // 加载失败，显示错误信息
+                        console.error(`加载更新日志失败 (${xhr.status}):`, changelogPath);
+                        
+                        // 显示文件夹内容作为帮助
+                        showFallbackContent(modulePath, versionForPath, versionCode, moduleName, moduleVersion);
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    console.error('加载更新日志请求错误:', changelogPath);
+                    showFallbackContent(modulePath, versionForPath, versionCode, moduleName, moduleVersion);
+                };
+                
+                xhr.send();
+            }
             
             // 显示备用内容的函数
             function showFallbackContent(modulePath, versionForPath, versionCode, moduleName, moduleVersion) {
@@ -3534,25 +3564,21 @@
                 `;
             }
             
-            // 监听模态框打开事件，设置焦点和键盘导航
-            document.getElementById('changelogModal').addEventListener('shown.bs.modal', function () {
-                // 焦点设置为模态框内容，方便键盘导航
-                document.getElementById('changelogContent').focus();
-                
-                // 监听键盘事件，ESC键关闭模态框
-                const handleKeyDown = function(e) {
-                    if (e.key === 'Escape') {
-                        changelogModal.hide();
-                    }
-                };
-                
-                document.addEventListener('keydown', handleKeyDown);
-                
-                // 监听模态框关闭事件，移除事件监听器
-                this.addEventListener('hidden.bs.modal', function() {
-                    document.removeEventListener('keydown', handleKeyDown);
-                }, { once: true });
+            // 添加ESC键关闭模态框
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modalElement.classList.contains('show')) {
+                    changelogModal.hide();
+                }
             });
+            
+            // 点击背景关闭模态框
+            modalElement.addEventListener('click', function(e) {
+                if (e.target === modalElement) {
+                    changelogModal.hide();
+                }
+            });
+            
+            console.log('更新日志功能初始化完成');
         }
         
         // 改进的Markdown解析函数
