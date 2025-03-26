@@ -2896,29 +2896,75 @@
             maxAge: 5 * 60 * 1000, // 5分钟缓存
             
             async get() {
+                console.log('moduleCache.get() 被调用');
                 const now = Date.now();
                 if (this.data && (now - this.timestamp) < this.maxAge) {
+                    console.log('返回缓存的模块数据');
                     return this.data;
                 }
                 
-                const response = await fetch('json/modules.json');
-                if (!response.ok) throw new Error('无法加载模块数据');
-                
-                this.data = await response.json();
-                this.timestamp = now;
-                return this.data;
+                console.log('正在获取模块数据...');
+                try {
+                    // 获取当前页面的基础路径
+                    const basePath = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+                    const jsonUrl = 'json/modules.json';
+                    const fullUrl = new URL(jsonUrl, basePath).href;
+                    
+                    console.log('获取模块数据的URL:', fullUrl);
+                    
+                    // 首先尝试使用相对路径
+                    let response;
+                    try {
+                        response = await fetch(jsonUrl);
+                        console.log('使用相对路径的响应:', response);
+                    } catch (fetchError) {
+                        console.error('使用相对路径获取失败，尝试使用完整URL:', fetchError);
+                        response = await fetch(fullUrl);
+                        console.log('使用完整URL的响应:', response);
+                    }
+                    
+                    if (!response.ok) {
+                        throw new Error(`无法加载模块数据: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('获取到的模块数据:', data);
+                    this.data = data;
+                    this.timestamp = now;
+                    return this.data;
+                } catch (error) {
+                    console.error('moduleCache.get()中的错误:', error);
+                    
+                    // 尝试获取目录列表以诊断问题
+                    try {
+                        console.log('正在检查json目录是否存在...');
+                        const dirResponse = await fetch('json/');
+                        console.log('json目录检查响应:', dirResponse);
+                    } catch (dirError) {
+                        console.error('检查json目录时出错:', dirError);
+                    }
+                    
+                    throw error;
+                }
             }
         };
 
         // 优化后的fetchModules函数
         async function fetchModules() {
+            console.log('fetchModules() 被调用');
             showLoading();
             try {
                 const data = await moduleCache.get();
+                console.log('moduleCache.get() 返回数据:', data);
+                if (!data || !data.modules) {
+                    console.error('模块数据格式不正确:', data);
+                    throw new Error('模块数据格式不正确');
+                }
                 window.currentModules = data.modules;
+                console.log('设置window.currentModules完成, 数量:', data.modules.length);
                 return data.modules;
             } catch (error) {
-                console.error('无法加载模块数据:', error);
+                console.error('fetchModules中的错误:', error);
                 return [];
             } finally {
                 hideLoading();
@@ -2927,20 +2973,32 @@
 
         // 优化渲染性能
         async function renderModules(modules) {
+            console.log('renderModules() 被调用, 模块数量:', modules.length);
             const moduleList = document.getElementById('moduleList');
+            
+            if (!moduleList) {
+                console.error('找不到moduleList元素!');
+                return;
+            }
+            console.log('找到moduleList元素:', moduleList);
             
             // 使用DocumentFragment优化DOM操作
             const fragment = document.createDocumentFragment();
             
             // 对模块数据进行预处理
-            const processedModules = modules.map(module => ({
-                ...module,
-                sortedVersions: module.versions?.sort((a, b) => b.versionCode - a.versionCode) || [],
-                features: getFeaturesList(module.features),
-                lastUpdate: formatDate(module.versions?.[0]?.timestamp),
-                isNew: (Date.now() / 1000 - module.versions?.[0]?.timestamp) < 7 * 24 * 60 * 60,
-                version: module.version.startsWith('v') ? module.version : `v${module.version}`
-            }));
+            const processedModules = modules.map(module => {
+                console.log('处理模块:', module.name);
+                return {
+                    ...module,
+                    sortedVersions: module.versions?.sort((a, b) => b.versionCode - a.versionCode) || [],
+                    features: getFeaturesList(module.features),
+                    lastUpdate: formatDate(module.versions?.[0]?.timestamp),
+                    isNew: (Date.now() / 1000 - module.versions?.[0]?.timestamp) < 7 * 24 * 60 * 60,
+                    version: module.version?.startsWith('v') ? module.version : `v${module.version}`
+                };
+            });
+            
+            console.log('预处理后的模块:', processedModules.length);
 
             // 使用模板字符串一次性创建DOM
             processedModules.forEach((module, index) => {
@@ -2961,24 +3019,24 @@
                         ` : ''}
                         <div class="module-meta">
                             <span>
-                                <i class="ri-user-3-line"></i> ${module.author}
+                                <i class="ri-user-3-line"></i> ${module.author || '未知作者'}
                             </span>
                             <span>
-                                <i class="ri-time-line"></i> ${module.lastUpdate}
+                                <i class="ri-time-line"></i> ${module.lastUpdate || '未知时间'}
                             </span>
                             <span class="module-version">
                                 <i class="ri-code-s-slash-line"></i>
-                                ${module.version}
+                                ${module.version || '未知版本'}
                             </span>
                         </div>
                     </div>
                     
                     <div class="module-content">
                         <div class="module-description">
-                            ${module.description}
+                            ${module.description || '没有描述'}
                         </div>
                         
-                        ${module.features.length > 0 ? `
+                        ${module.features && module.features.length > 0 ? `
                             <div class="module-features">
                                 ${module.features.map(feature => `
                                     <span class="feature-tag">
@@ -2992,24 +3050,31 @@
 
                     <div class="module-actions">
                         <div class="action-group">
-                            <a href="${module.sortedVersions[0].zipUrl}" class="btn btn-primary">
-                                <i class="ri-download-2-line"></i>
-                                下载
-                                ${module.sortedVersions[0].size ? `<small class="ms-2 opacity-75">${formatSize(module.sortedVersions[0].size)}</small>` : ''}
-                            </a>
-                            <a href="${module.track?.source || `https://github.com/search?q=${encodeURIComponent(module.name)}+in:name&type=repositories`}" 
+                            ${module.sortedVersions && module.sortedVersions.length > 0 ? `
+                                <a href="${module.sortedVersions[0].zipUrl}" class="btn btn-primary">
+                                    <i class="ri-download-2-line"></i>
+                                    下载
+                                    ${module.sortedVersions[0].size ? `<small class="ms-2 opacity-75">${formatSize(module.sortedVersions[0].size)}</small>` : ''}
+                                </a>
+                            ` : `
+                                <button class="btn btn-primary disabled">
+                                    <i class="ri-download-2-line"></i>
+                                    无可用下载
+                                </button>
+                            `}
+                            <a href="${module.track?.source || module.support || `https://github.com/search?q=${encodeURIComponent(module.name)}+in:name&type=repositories`}" 
                                target="_blank" 
                                class="btn btn-icon" 
                                title="${module.track?.source ? '查看源码' : '在 GitHub 上搜索相关仓库'}">
                                 <i class="ri-github-line"></i>
                             </a>
-                            ${module.sortedVersions[0].changelog ? `
+                            ${module.sortedVersions && module.sortedVersions[0] && module.sortedVersions[0].changelog ? `
                                 <button class="btn btn-icon" onclick="showChangelogModal('${module.sortedVersions[0].changelog}', '${module.version}')" title="查看更新日志">
                                     <i class="ri-file-list-3-line"></i>
                                 </button>
                             ` : ''}
                         </div>
-                        ${module.sortedVersions.length > 1 ? `
+                        ${module.sortedVersions && module.sortedVersions.length > 1 ? `
                             <div class="accordion mt-3">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
@@ -3023,12 +3088,12 @@
                                                 ${module.sortedVersions
                                                     .slice(1)
                                                     .map(ver => {
-                                                        const version = ver.version.startsWith('v') ? ver.version : `v${ver.version}`;
+                                                        const version = ver.version?.startsWith('v') ? ver.version : `v${ver.version}`;
                                                         return `
                                                             <a href="${ver.zipUrl}" class="list-group-item list-group-item-action">
                                                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                                                     <div>
-                                                                        <div class="fw-medium">${version}</div>
+                                                                        <div class="fw-medium">${version || '未知版本'}</div>
                                                                         <small class="text-muted">${formatDate(ver.timestamp)}</small>
                                                                     </div>
                                                                     <div class="d-flex align-items-center">
@@ -3236,6 +3301,8 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOMContentLoaded 事件触发');
+            
             // 设置主题
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
@@ -3262,30 +3329,35 @@
                 document.head.appendChild(style);
             }
             
+            // 检查必要的DOM元素
+            const moduleList = document.getElementById('moduleList');
+            if (!moduleList) {
+                console.error('找不到moduleList元素');
+                return;
+            }
+            
             // 加载模块数据
             try {
+                console.log('开始加载模块数据...');
                 const modules = await fetchModules();
+                console.log('模块加载完成, 数量:', modules ? modules.length : 0);
+                
                 if (modules && modules.length > 0) {
+                    console.log('开始渲染模块...');
+                    // 检查模块数据格式
+                    const sampleModule = modules[0];
+                    console.log('示例模块数据:', sampleModule);
+                    
                     renderModules(modules);
                     
                     // 设置筛选和排序
                     setupFilters();
                 } else {
-                    document.getElementById('moduleList').innerHTML = `
-                        <div class="alert alert-warning text-center py-5">
-                            <i class="ri-information-line me-2"></i> 
-                            没有找到模块。请检查网络连接或稍后再试。
-                        </div>
-                    `;
+                    console.warn('没有找到模块');
+                    handleError(new Error('没有找到模块数据'), moduleList, 'warning');
                 }
             } catch (error) {
-                console.error('加载模块时出错:', error);
-                document.getElementById('moduleList').innerHTML = `
-                    <div class="alert alert-danger text-center py-5">
-                        <i class="ri-error-warning-line me-2"></i> 
-                        加载模块时出错: ${error.message}
-                    </div>
-                `;
+                handleError(error, moduleList);
             }
         });
 
@@ -3315,6 +3387,9 @@
             const sortOrder = document.getElementById('sortOrder');
             const featureFilter = document.getElementById('featureFilter');
             
+            // 更新分类筛选器
+            updateCategoryFilter();
+            
             // 初始化时立即筛选一次
             filterModules();
             
@@ -3338,9 +3413,67 @@
             });
         }
         
+        // 从模块数据中提取分类并更新筛选器
+        function updateCategoryFilter() {
+            const modules = window.currentModules || [];
+            if (!modules.length) return;
+            
+            console.log('更新分类筛选器');
+            
+            // 获取所有唯一的分类
+            const categories = new Set();
+            modules.forEach(module => {
+                if (module.categories && Array.isArray(module.categories)) {
+                    module.categories.forEach(category => categories.add(category));
+                }
+            });
+            
+            // 对分类进行排序
+            const sortedCategories = Array.from(categories).sort();
+            console.log('发现的分类:', sortedCategories);
+            
+            // 更新下拉菜单
+            const categoryDropdown = document.querySelector('.dropdown-menu[aria-labelledby="categoryFilter"]');
+            const categorySelect = document.getElementById('categoryFilter');
+            
+            if (categoryDropdown) {
+                // 清空现有选项，但保留"全部分类"选项
+                categoryDropdown.innerHTML = `<li><a class="dropdown-item" href="#" data-value="">全部分类</a></li>`;
+                
+                // 添加新的分类选项
+                sortedCategories.forEach(category => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<a class="dropdown-item" href="#" data-value="${category}">${category}</a>`;
+                    categoryDropdown.appendChild(listItem);
+                });
+            }
+            
+            if (categorySelect) {
+                // 保存当前选定的值
+                const currentValue = categorySelect.value;
+                
+                // 清空现有选项，但保留"全部分类"选项
+                categorySelect.innerHTML = `<option value="">全部分类</option>`;
+                
+                // 添加新的分类选项
+                sortedCategories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categorySelect.appendChild(option);
+                });
+                
+                // 恢复选择
+                if (sortedCategories.includes(currentValue)) {
+                    categorySelect.value = currentValue;
+                }
+            }
+        }
+        
         // 筛选和排序模块
         function filterModules() {
             const modules = window.currentModules || [];
+            console.log('filterModules被调用, 模块数量:', modules.length);
             if (!modules.length) return;
             
             const searchTerm = document.getElementById('moduleSearch').value.toLowerCase();
@@ -3348,21 +3481,25 @@
             const sortBy = document.getElementById('sortOrder').value;
             const feature = document.getElementById('featureFilter').value;
             
+            console.log('筛选条件:', {searchTerm, category, sortBy, feature});
+            
             // 应用筛选
             let filteredModules = modules.filter(module => {
                 // 筛选搜索词
-                const nameMatch = module.name.toLowerCase().includes(searchTerm);
-                const descMatch = module.description.toLowerCase().includes(searchTerm);
-                const authorMatch = module.author.toLowerCase().includes(searchTerm);
+                const nameMatch = (module.name || '').toLowerCase().includes(searchTerm);
+                const descMatch = (module.description || '').toLowerCase().includes(searchTerm);
+                const authorMatch = (module.author || '').toLowerCase().includes(searchTerm);
                 
                 // 筛选分类
-                const categoryMatch = !category || module.category === category;
+                const categoryMatch = !category || (module.categories && module.categories.includes(category));
                 
                 // 筛选功能
                 const featureMatch = !feature || (module.features && module.features[feature] === true);
                 
                 return (nameMatch || descMatch || authorMatch) && categoryMatch && featureMatch;
             });
+            
+            console.log('筛选后的模块数量:', filteredModules.length);
             
             // 应用排序
             filteredModules.sort((a, b) => {
@@ -3371,9 +3508,9 @@
                     const bTime = b.versions?.[0]?.timestamp || 0;
                     return bTime - aTime;
                 } else if (sortBy === 'name') {
-                    return a.name.localeCompare(b.name);
+                    return (a.name || '').localeCompare(b.name || '');
                 } else if (sortBy === 'author') {
-                    return a.author.localeCompare(b.author);
+                    return (a.author || '').localeCompare(b.author || '');
                 }
                 return 0;
             });
@@ -3403,6 +3540,46 @@
         // 检测移动设备
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             document.body.classList.add('is-mobile');
+        }
+
+        // 处理错误并显示用户友好的信息
+        function handleError(error, container, type = 'error') {
+            console.error('处理错误:', error);
+            
+            const isNetworkError = error.message.includes('Failed to fetch') || 
+                                   error.message.includes('NetworkError') ||
+                                   error.message.includes('Network request failed');
+            
+            const is404Error = error.message.includes('404') || 
+                               error.message.includes('Not Found');
+            
+            let errorMessage = error.message;
+            let solution = '';
+            
+            if (isNetworkError) {
+                errorMessage = '网络连接错误';
+                solution = '请检查您的网络连接，并确保能够访问互联网。';
+            } else if (is404Error) {
+                errorMessage = '找不到模块数据文件';
+                solution = '请确保json/modules.json文件存在并可访问。';
+            }
+            
+            const alertType = type === 'error' ? 'danger' : 'warning';
+            const icon = type === 'error' ? 'ri-error-warning-line' : 'ri-information-line';
+            
+            container.innerHTML = `
+                <div class="alert alert-${alertType} text-center py-5">
+                    <i class="${icon} me-2"></i> 
+                    <div class="fw-bold mb-2">${errorMessage}</div>
+                    ${solution ? `<div class="mb-2">${solution}</div>` : ''}
+                    <div class="mt-3 small text-muted">
+                        技术细节: ${error.message}
+                        <button class="btn btn-sm btn-outline-secondary mt-2" onclick="location.reload()">
+                            <i class="ri-refresh-line me-1"></i> 刷新页面
+                        </button>
+                    </div>
+                </div>
+            `;
         }
     </script>
 </head>
