@@ -2064,6 +2064,7 @@
             box-shadow: var(--shadow);
             backdrop-filter: var(--blur);
             -webkit-backdrop-filter: var(--blur);
+            pointer-events: auto !important;
         }
 
         .modal-header {
@@ -2089,6 +2090,11 @@
         
         .modal-backdrop {
             z-index: 1070 !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        .modal-backdrop.show {
+            opacity: 1 !important;
         }
         
         /* 防止点击模态框后背景元素消失 */
@@ -2260,13 +2266,22 @@
             body.modal-open .header,
             body.modal-open .footer {
                 visibility: visible !important;
-                opacity: 0.5 !important; /* 稍微降低不相关内容的透明度 */
+                opacity: 1 !important; /* 保持完全不透明，不再降低透明度 */
+                z-index: auto !important;
+            }
+            
+            /* 确保模态框按钮可以点击 */
+            .modal .modal-header .btn-close,
+            .modal .modal-footer .btn {
+                pointer-events: auto !important;
+                z-index: 2100 !important;
             }
         }
 
         /* 修复特定情况下的视觉问题 */
         .modal-open {
             padding-right: 0 !important; /* 防止Bootstrap添加的右侧padding导致页面跳动 */
+            overflow: hidden !important;
         }
 
         .modal {
@@ -2278,6 +2293,177 @@
         .modal .spinner-border {
             display: inline-block;
             vertical-align: middle;
+        }
+
+        /* 修复模态框按钮不可点击的问题 */
+        .modal-content {
+            pointer-events: auto !important;
+        }
+
+        .modal-header .btn-close {
+            z-index: 10;
+            position: relative;
+            opacity: 1;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+        }
+
+        .modal-header .btn-close:hover {
+            opacity: 0.75;
+        }
+
+        .modal-footer .btn {
+            position: relative;
+            z-index: 10;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+        }
+
+        /* 确保模态框在移动端可见 */
+        .modal.fade .modal-dialog {
+            transform: none !important;
+        }
+
+        .modal.show .modal-dialog {
+            transform: none !important;
+        }
+
+        /* 修复模态框背景层遮挡问题 */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1 !important;
+        }
+
+        /* 确保指针事件只在模态框内生效 */
+        .modal {
+            pointer-events: none;
+        }
+
+        .modal-dialog {
+            pointer-events: auto;
+        }
+
+        /* 移动设备上的模态框优化 */
+        @media (max-width: 768px) {
+            /* 确保模态框总是可见并可交互 */
+            .modal-backdrop {
+                opacity: 0.7 !important;
+                background-color: rgba(0, 0, 0, 0.7) !important;
+            }
+            
+            .modal-open {
+                overflow: hidden !important;
+                height: 100% !important;
+                position: fixed !important;
+                width: 100% !important;
+            }
+            
+            /* 确保模态框中的内容在移动设备上有更好的布局 */
+            .modal-content {
+                max-height: 80vh !important;
+                margin: 0 auto !important;
+                border-radius: 10px !important;
+                overflow: hidden !important;
+            }
+            
+            .modal-dialog {
+                margin: 10vh auto !important;
+                max-width: 90% !important;
+            }
+            
+            .modal-body {
+                max-height: calc(80vh - 120px) !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            /* 确保关闭按钮足够大，易于点击 */
+            .modal-header .btn-close {
+                padding: 12px !important;
+                margin: -12px -12px -12px auto !important;
+                font-size: 1.5rem !important;
+            }
+            
+            /* 防止模态框关闭时底层元素跳动 */
+            body.modal-open {
+                width: 100% !important;
+                position: fixed !important;
+                overflow: hidden !important;
+            }
+            
+            /* 防止iOS Safari上出现橡皮筋滚动效果 */
+            .modal {
+                -webkit-overflow-scrolling: auto !important;
+            }
+        }
+        
+        /* 确保模态框内容可以正常滚动 */
+        #changelogContent {
+            overflow-y: auto;
+            max-height: 60vh;
+            padding-right: 5px;
+        }
+        
+        /* 格式化Markdown内容的样式 */
+        #changelogContent h1, 
+        #changelogContent h2 {
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+            margin-top: 1em;
+        }
+        
+        #changelogContent ul {
+            padding-left: 1.5em;
+        }
+        
+        #changelogContent pre {
+            background-color: #f6f8fa;
+            border-radius: 3px;
+            padding: 12px;
+            overflow-x: auto;
+        }
+        
+        /* 适配深色主题 */
+        .dark-mode #changelogContent pre {
+            background-color: #1e1e1e;
+        }
+        
+        .dark-mode #changelogContent h1, 
+        .dark-mode #changelogContent h2 {
+            border-bottom-color: #333;
+        }
+        
+        /* 确保滚动条样式一致 */
+        #changelogContent::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #changelogContent::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        #changelogContent::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        #changelogContent::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .dark-mode #changelogContent::-webkit-scrollbar-track {
+            background: #333;
+        }
+        
+        .dark-mode #changelogContent::-webkit-scrollbar-thumb {
+            background: #666;
+        }
+        
+        .dark-mode #changelogContent::-webkit-scrollbar-thumb:hover {
+            background: #888;
         }
     </style>
 </head>
@@ -2293,7 +2479,7 @@
                 </div>
                 <div class="header-links">
                     <a href="https://t.me/module_update" class="tg-button" target="_blank" title="加入Telegram频道">
-                        <i class="ri-telegram-fill"></i>
+                        <i class="ri-send-plane-fill"></i>
                     </a>
                     <button class="theme-switch" id="themeSwitch">
                         <i class="ri-sun-line"></i>
@@ -2382,22 +2568,19 @@
 
     <!-- 更新日志模态框 -->
     <div class="modal fade" id="changelogModal" tabindex="-1" aria-labelledby="changelogModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="changelogModalLabel">更新日志</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭" onclick="event.stopPropagation();"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="changelogContent" class="markdown-content">
-                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-                            <span class="visually-hidden">加载中...</span>
-                        </div>
-                        <span class="ms-2">正在加载更新日志...</span>
+                    <div id="changelogContent" class="markdown-body">
+                        <!-- 更新日志内容将在这里动态加载 -->
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="event.stopPropagation();">关闭</button>
                 </div>
             </div>
         </div>
@@ -3504,11 +3687,44 @@
                 </div>
             `;
             
-            // 确保页面不滚动到顶部
-            document.body.style.top = `-${window.scrollY}px`;
+            // 保存当前滚动位置，避免页面跳动
+            const scrollY = window.scrollY;
+            document.body.style.top = `-${scrollY}px`;
             
             // 显示模态框
             changelogModal.show();
+            
+            // 确保关闭按钮和背景点击能关闭模态框
+            const modalElement = document.getElementById('changelogModal');
+            const closeBtn = modalElement.querySelector('.btn-close');
+            const footerCloseBtn = modalElement.querySelector('.modal-footer .btn');
+            
+            // 重新绑定关闭事件，确保它们能正常工作
+            if (closeBtn) {
+                // 移除可能存在的旧事件
+                const newCloseBtn = closeBtn.cloneNode(true);
+                closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+                
+                // 添加新的点击事件
+                newCloseBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    changelogModal.hide();
+                });
+            }
+            
+            if (footerCloseBtn) {
+                // 移除可能存在的旧事件
+                const newFooterBtn = footerCloseBtn.cloneNode(true);
+                footerCloseBtn.parentNode.replaceChild(newFooterBtn, footerCloseBtn);
+                
+                // 添加新的点击事件
+                newFooterBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    changelogModal.hide();
+                });
+            }
             
             // 添加键盘事件监听
             const handleKeyDown = (e) => {
@@ -3520,19 +3736,18 @@
             
             document.addEventListener('keydown', handleKeyDown);
             
-            // 模态框关闭时移除事件监听
-            const modalElement = document.getElementById('changelogModal');
+            // 模态框关闭时移除事件监听，恢复页面状态
             modalElement.addEventListener('hidden.bs.modal', () => {
                 document.removeEventListener('keydown', handleKeyDown);
                 
                 // 恢复滚动位置
-                const scrollY = parseInt(document.body.style.top || '0');
+                const scrollPosition = Math.abs(parseInt(document.body.style.top || '0'));
                 document.body.style.top = '';
-                window.scrollTo(0, Math.abs(scrollY));
-                
-                // 解决iOS Safari上可能的滚动问题
-                document.body.style.overflow = '';
                 document.body.style.position = '';
+                window.scrollTo(0, scrollPosition);
+                
+                // 恢复页面状态
+                document.body.style.overflow = '';
                 document.body.style.height = '';
                 document.body.style.width = '';
             }, { once: true });
@@ -3596,6 +3811,14 @@
                 }[match];
             });
             
+            // 预处理特定格式
+            // 保存代码块，避免被其他规则处理
+            const codeBlocks = [];
+            markdown = markdown.replace(/```([\s\S]*?)```/g, function(match) {
+                codeBlocks.push(match);
+                return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
+            });
+            
             // 基本的Markdown格式化
             let formatted = markdown
                 // 标题
@@ -3603,10 +3826,16 @@
                 .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
                 .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
                 .replace(/^#### (.*?)$/gm, '<h4>$1</h4>')
+                .replace(/^##### (.*?)$/gm, '<h5>$1</h5>')
                 
                 // 强调
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.*?)__/g, '<strong>$1</strong>') // 支持下划线粗体
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/_(.*?)_/g, '<em>$1</em>') // 支持下划线斜体
+                
+                // 删除线
+                .replace(/~~(.*?)~~/g, '<del>$1</del>')
                 
                 // 链接 - 确保URL是安全的
                 .replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, text, url) {
@@ -3618,25 +3847,66 @@
                     }
                 })
                 
-                // 列表
-                .replace(/^- (.*?)$/gm, '<li>$1</li>')
-                .replace(/(<li>.*?<\/li>)\n(?!<li>)/gs, '<ul>$1</ul>')
+                // 图片
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, src) {
+                    if (src.startsWith('http://') || src.startsWith('https://')) {
+                        return `<img src="${src}" alt="${alt}" class="img-fluid" style="max-width:100%;">`;
+                    } else {
+                        return '';
+                    }
+                })
                 
-                // 代码块
-                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                // 有序列表
+                .replace(/^(\d+)\. (.*?)$/gm, '<li>$2</li>')
+                
+                // 无序列表
+                .replace(/^[*\-+] (.*?)$/gm, '<li>$1</li>')
+                
+                // 将连续的列表项包装在ul或ol中
+                .replace(/(<li>.*?)(?:\n<li>.*?)+/gs, function(match) {
+                    // 确定是有序列表还是无序列表
+                    if (match.match(/^(\d+)\. /m)) {
+                        return '<ol>' + match + '</ol>';
+                    } else {
+                        return '<ul>' + match + '</ul>';
+                    }
+                })
+                
+                // 表格（简单支持）
+                .replace(/\|(.+)\|(.+)\|/g, '<tr><td>$1</td><td>$2</td></tr>')
+                .replace(/(<tr>.*?<\/tr>)+/g, '<table class="table table-bordered">$&</table>')
+                
+                // 引用块
+                .replace(/^> (.*?)$/gm, '<blockquote>$1</blockquote>')
                 
                 // 内联代码
                 .replace(/`([^`]+)`/g, '<code>$1</code>')
                 
                 // 分隔线
-                .replace(/^\s*---\s*$/gm, '<hr>')
+                .replace(/^\s*[\-*_]{3,}\s*$/gm, '<hr>')
                 
-                // 段落
+                // 段落换行
                 .replace(/\n\n/g, '</p><p>')
                 .replace(/\n/g, '<br>');
+            
+            // 恢复代码块
+            formatted = formatted.replace(/__CODE_BLOCK_(\d+)__/g, function(match, index) {
+                const codeBlock = codeBlocks[parseInt(index)];
+                // 从原始代码块中提取语言和内容
+                const langMatch = codeBlock.match(/```(\w*)\n([\s\S]*?)```/);
+                const lang = langMatch && langMatch[1] ? ` class="language-${langMatch[1]}"` : '';
+                const code = langMatch ? langMatch[2] : codeBlock.replace(/```([\s\S]*?)```/g, '$1');
                 
+                return `<pre><code${lang}>${code}</code></pre>`;
+            });
+            
             // 包装在段落中
-            if (!formatted.startsWith('<h') && !formatted.startsWith('<ul') && !formatted.startsWith('<ol') && !formatted.startsWith('<p>')) {
+            if (!formatted.startsWith('<h') && 
+                !formatted.startsWith('<ul') && 
+                !formatted.startsWith('<ol') && 
+                !formatted.startsWith('<p>') &&
+                !formatted.startsWith('<blockquote') &&
+                !formatted.startsWith('<pre')) {
                 formatted = '<p>' + formatted + '</p>';
             }
             
