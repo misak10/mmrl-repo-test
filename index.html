@@ -3261,6 +3261,32 @@
                 `;
                 document.head.appendChild(style);
             }
+            
+            // 加载模块数据
+            try {
+                const modules = await fetchModules();
+                if (modules && modules.length > 0) {
+                    renderModules(modules);
+                    
+                    // 设置筛选和排序
+                    setupFilters();
+                } else {
+                    document.getElementById('moduleList').innerHTML = `
+                        <div class="alert alert-warning text-center py-5">
+                            <i class="ri-information-line me-2"></i> 
+                            没有找到模块。请检查网络连接或稍后再试。
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载模块时出错:', error);
+                document.getElementById('moduleList').innerHTML = `
+                    <div class="alert alert-danger text-center py-5">
+                        <i class="ri-error-warning-line me-2"></i> 
+                        加载模块时出错: ${error.message}
+                    </div>
+                `;
+            }
         });
 
         // 初始化页面状态
@@ -3281,6 +3307,103 @@
                 });
             }
         });
+        
+        // 设置筛选和排序功能
+        function setupFilters() {
+            const moduleSearch = document.getElementById('moduleSearch');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const sortOrder = document.getElementById('sortOrder');
+            const featureFilter = document.getElementById('featureFilter');
+            
+            // 初始化时立即筛选一次
+            filterModules();
+            
+            // 为各种筛选器添加事件监听
+            moduleSearch.addEventListener('input', debouncedFilter);
+            categoryFilter.addEventListener('change', debouncedFilter);
+            sortOrder.addEventListener('change', debouncedFilter);
+            featureFilter.addEventListener('change', debouncedFilter);
+            
+            // 处理下拉菜单点击
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const value = this.getAttribute('data-value');
+                    const dropdown = this.closest('.input-group').querySelector('select');
+                    if (dropdown) {
+                        dropdown.value = value;
+                        dropdown.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+        }
+        
+        // 筛选和排序模块
+        function filterModules() {
+            const modules = window.currentModules || [];
+            if (!modules.length) return;
+            
+            const searchTerm = document.getElementById('moduleSearch').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const sortBy = document.getElementById('sortOrder').value;
+            const feature = document.getElementById('featureFilter').value;
+            
+            // 应用筛选
+            let filteredModules = modules.filter(module => {
+                // 筛选搜索词
+                const nameMatch = module.name.toLowerCase().includes(searchTerm);
+                const descMatch = module.description.toLowerCase().includes(searchTerm);
+                const authorMatch = module.author.toLowerCase().includes(searchTerm);
+                
+                // 筛选分类
+                const categoryMatch = !category || module.category === category;
+                
+                // 筛选功能
+                const featureMatch = !feature || (module.features && module.features[feature] === true);
+                
+                return (nameMatch || descMatch || authorMatch) && categoryMatch && featureMatch;
+            });
+            
+            // 应用排序
+            filteredModules.sort((a, b) => {
+                if (sortBy === 'update') {
+                    const aTime = a.versions?.[0]?.timestamp || 0;
+                    const bTime = b.versions?.[0]?.timestamp || 0;
+                    return bTime - aTime;
+                } else if (sortBy === 'name') {
+                    return a.name.localeCompare(b.name);
+                } else if (sortBy === 'author') {
+                    return a.author.localeCompare(b.author);
+                }
+                return 0;
+            });
+            
+            // 重新渲染结果
+            renderModules(filteredModules);
+            
+            // 更新筛选结果计数
+            updateFilterCounter(filteredModules.length, modules.length);
+        }
+        
+        // 更新筛选结果计数
+        function updateFilterCounter(filteredCount, totalCount) {
+            const moduleList = document.getElementById('moduleList');
+            
+            // 如果没有模块，显示提示信息
+            if (filteredCount === 0) {
+                moduleList.innerHTML = `
+                    <div class="alert alert-info text-center py-5">
+                        <i class="ri-filter-off-line me-2"></i> 
+                        没有找到匹配的模块。请尝试不同的搜索条件。
+                    </div>
+                `;
+            }
+        }
+        
+        // 检测移动设备
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            document.body.classList.add('is-mobile');
+        }
     </script>
 </head>
 <body>
@@ -3430,329 +3553,5 @@
             </div>
         </div>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 主题切换逻辑保持不变
-        const themeSwitch = document.getElementById('themeSwitch');
-        const icon = themeSwitch.querySelector('i');
-        
-        function toggleTheme() {
-            const html = document.documentElement;
-            const isDark = html.getAttribute('data-bs-theme') === 'dark';
-            html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
-            icon.className = isDark ? 'ri-moon-line' : 'ri-sun-line';
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
-        }
-
-        themeSwitch.addEventListener('click', toggleTheme);
-
-        // 加载动画
-        const loading = document.querySelector('.loading');
-        function showLoading() {
-            loading.classList.add('active');
-        }
-        function hideLoading() {
-            loading.classList.remove('active');
-        }
-
-        // 防抖函数
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-        
-        // 使用 IntersectionObserver 优化模块卡片加载
-        const observeModules = () => {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('show');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.1,
-                rootMargin: '50px'
-            });
-            
-            document.querySelectorAll('.module-card').forEach(card => {
-                observer.observe(card);
-            });
-        };
-
-        // 优化模块数据缓存
-        const moduleCache = {
-            data: null,
-            timestamp: 0,
-            maxAge: 5 * 60 * 1000, // 5分钟缓存
-            
-            async get() {
-                const now = Date.now();
-                if (this.data && (now - this.timestamp) < this.maxAge) {
-                    return this.data;
-                }
-                
-                const response = await fetch('json/modules.json');
-                if (!response.ok) throw new Error('无法加载模块数据');
-                
-                this.data = await response.json();
-                this.timestamp = now;
-                return this.data;
-            }
-        };
-
-        // 优化后的fetchModules函数
-        async function fetchModules() {
-            showLoading();
-            try {
-                const data = await moduleCache.get();
-                window.currentModules = data.modules;
-                return data.modules;
-            } catch (error) {
-                console.error('无法加载模块数据:', error);
-                return [];
-            } finally {
-                hideLoading();
-            }
-        }
-
-        // 优化渲染性能
-        async function renderModules(modules) {
-            const moduleList = document.getElementById('moduleList');
-            
-            // 使用DocumentFragment优化DOM操作
-            const fragment = document.createDocumentFragment();
-            
-            // 对模块数据进行预处理
-            const processedModules = modules.map(module => ({
-                ...module,
-                sortedVersions: module.versions?.sort((a, b) => b.versionCode - a.versionCode) || [],
-                features: getFeaturesList(module.features),
-                lastUpdate: formatDate(module.versions?.[0]?.timestamp),
-                isNew: (Date.now() / 1000 - module.versions?.[0]?.timestamp) < 7 * 24 * 60 * 60,
-                version: module.version.startsWith('v') ? module.version : `v${module.version}`
-            }));
-
-            // 使用模板字符串一次性创建DOM
-            processedModules.forEach((module, index) => {
-                const card = document.createElement('div');
-                card.className = 'module-card';
-                card.style.setProperty('--order', index);
-                
-                card.innerHTML = `
-                    <div class="module-header">
-                        <span class="module-name" data-full-name="${module.name}">
-                            ${module.name}
-                        </span>
-                        ${module.isNew ? `
-                            <span class="module-new-badge">
-                                <i class="ri-flashlight-line"></i>
-                                New
-                            </span>
-                        ` : ''}
-                        <div class="module-meta">
-                            <span>
-                                <i class="ri-user-3-line"></i> ${module.author}
-                            </span>
-                            <span>
-                                <i class="ri-time-line"></i> ${module.lastUpdate}
-                            </span>
-                            <span class="module-version">
-                                <i class="ri-code-s-slash-line"></i>
-                                ${module.version}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="module-content">
-                        <div class="module-description">
-                            ${module.description}
-                        </div>
-                        
-                        ${module.features.length > 0 ? `
-                            <div class="module-features">
-                                ${module.features.map(feature => `
-                                    <span class="feature-tag">
-                                        <i class="ri-checkbox-circle-line"></i>
-                                        ${feature}
-                                    </span>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-
-                    <div class="module-actions">
-                        <div class="action-group">
-                            <a href="${module.sortedVersions[0].zipUrl}" class="btn btn-primary">
-                                <i class="ri-download-2-line"></i>
-                                下载
-                                ${module.sortedVersions[0].size ? `<small class="ms-2 opacity-75">${formatSize(module.sortedVersions[0].size)}</small>` : ''}
-                            </a>
-                            <a href="${module.track?.source || `https://github.com/search?q=${encodeURIComponent(module.name)}+in:name&type=repositories`}" 
-                               target="_blank" 
-                               class="btn btn-icon" 
-                               title="${module.track?.source ? '查看源码' : '在 GitHub 上搜索相关仓库'}">
-                                <i class="ri-github-line"></i>
-                            </a>
-                            ${module.sortedVersions[0].changelog ? `
-                                <button class="btn btn-icon" onclick="showChangelogModal('${module.sortedVersions[0].changelog}', '${module.version}')" title="查看更新日志">
-                                    <i class="ri-file-list-3-line"></i>
-                                </button>
-                            ` : ''}
-                        </div>
-                        ${module.sortedVersions.length > 1 ? `
-                            <div class="accordion mt-3">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#version-${index}">
-                                            历史版本 (${module.sortedVersions.length - 1})
-                                        </button>
-                                    </h2>
-                                    <div id="version-${index}" class="accordion-collapse collapse">
-                                        <div class="accordion-body">
-                                            <div class="list-group">
-                                                ${module.sortedVersions
-                                                    .slice(1)
-                                                    .map(ver => {
-                                                        const version = ver.version.startsWith('v') ? ver.version : `v${ver.version}`;
-                                                        return `
-                                                            <a href="${ver.zipUrl}" class="list-group-item list-group-item-action">
-                                                                <div class="d-flex w-100 justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <div class="fw-medium">${version}</div>
-                                                                        <small class="text-muted">${formatDate(ver.timestamp)}</small>
-                                                                    </div>
-                                                                    <div class="d-flex align-items-center">
-                                                                        ${ver.changelog ? 
-                                                                            `<button class="version-changelog-btn" 
-                                                                                onclick="showChangelogModal('${ver.changelog}', '${version}')" 
-                                                                                title="查看更新日志">
-                                                                                <i class="ri-file-list-3-line"></i>
-                                                                            </button>` : ''}
-                                                                        ${ver.size ? `<span class="badge ms-2">${formatSize(ver.size)}</span>` : ''}
-                                                                    </div>
-                                                                </div>
-                                                            </a>
-                                                        `;
-                                                    }).join('')}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-                
-                fragment.appendChild(card);
-            });
-
-            // 清空列表并一次性添加所有卡片
-            moduleList.innerHTML = '';
-            moduleList.appendChild(fragment);
-            
-            // 使用 IntersectionObserver 优化滚动加载
-            observeModules();
-        }
-
-        function getFeaturesList(features) {
-            const featureNames = {
-                service: '服务',
-                post_fs_data: '文件系统',
-                action: '操作',
-                webroot: 'Web界面',
-                sepolicy: 'SEPolicy',
-                apks: 'APK支持'
-            };
-            
-            return Object.entries(features || {})
-                .filter(([_, value]) => value === true)
-                .map(([key, _]) => featureNames[key] || key);
-        }
-
-        function formatDate(timestamp) {
-            if (!timestamp) return '未知时间';
-            const date = new Date(timestamp * 1000);
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            return `${year}-${month}-${day} ${hours}:${minutes}`;
-        }
-
-        function formatSize(bytes) {
-            if (!bytes) return '';
-            const units = ['B', 'KB', 'MB', 'GB'];
-            let size = bytes;
-            let unitIndex = 0;
-            while (size >= 1024 && unitIndex < units.length - 1) {
-                size /= 1024;
-                unitIndex++;
-            }
-            return `${size.toFixed(1)} ${units[unitIndex]}`;
-        }
-
-        // 优化搜索和筛选
-        const debouncedFilter = debounce(() => {
-            requestAnimationFrame(filterModules);
-        }, 300);
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', async function() {
-            // 设置主题
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.documentElement.setAttribute('data-bs-theme', savedTheme);
-                icon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
-            }
-            
-            // 移动端专用优化
-            if (window.innerWidth <= 768) {
-                // 增强模块卡片的触摸反馈
-                const style = document.createElement('style');
-                style.textContent = `
-                    .module-card {
-                        transition: transform 0.15s ease !important;
-                    }
-                    .module-card:active {
-                        transform: scale(0.98) !important;
-                    }
-                    .module-card a, .module-card button {
-                        position: relative !important;
-                        z-index: 10 !important;
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        });
-
-        // 初始化页面状态
-        window.addEventListener('load', function() {
-            // 确保移除任何可能存在的模态框相关类
-            document.body.classList.remove('modal-open');
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-            
-            // 移动端优化
-            if (window.innerWidth <= 768) {
-                // 增强页面滚动体验
-                document.documentElement.style.scrollBehavior = 'smooth';
-                
-                // 优化模块卡片点击
-                document.querySelectorAll('.module-card').forEach(card => {
-                    card.style.cursor = 'pointer';
-                });
-            }
-        });
-    </script>
 </body>
 </html> 
