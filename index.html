@@ -1699,6 +1699,7 @@
             border-radius: 50%;
             transition: all 0.3s ease;
             margin-right: 0.75rem;
+            text-decoration: none; /* 去掉下划线 */
         }
 
         .tg-button:hover {
@@ -1706,6 +1707,7 @@
             color: #fff;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-decoration: none; /* 确保悬停时也没有下划线 */
         }
 
         [data-bs-theme="dark"] .tg-button {
@@ -2351,7 +2353,9 @@
             /* 确保模态框总是可见并可交互 */
             .modal-backdrop {
                 opacity: 0.7 !important;
-                background-color: rgba(0, 0, 0, 0.7) !important;
+                background-color: rgba(0, 0, 0, 0.4) !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
             }
             
             .modal-open {
@@ -2367,10 +2371,12 @@
                 margin: 0 auto !important;
                 border-radius: 10px !important;
                 overflow: hidden !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--input-border) !important;
             }
             
             .modal-dialog {
-                margin: 10vh auto !important;
+                margin: 10vh auto !important; /* 将模态框上移 */
                 max-width: 90% !important;
             }
             
@@ -2392,6 +2398,26 @@
                 width: 100% !important;
                 position: fixed !important;
                 overflow: hidden !important;
+            }
+            
+            /* 毛玻璃背景效果和背景可见性 */
+            body.modal-open .modules-grid,
+            body.modal-open .search-section,
+            body.modal-open .header,
+            body.modal-open .footer {
+                visibility: visible !important;
+                opacity: 1 !important;
+                z-index: auto !important;
+                filter: blur(0) !important; /* 确保背景不被模糊 */
+            }
+            
+            /* 确保背景内容保持可见 */
+            .modal-open .container,
+            .modal-open .modules-grid,
+            .modal-open .search-section {
+                pointer-events: none !important;
+                filter: none !important;
+                opacity: 1 !important;
             }
             
             /* 防止iOS Safari上出现橡皮筋滚动效果 */
@@ -2464,6 +2490,55 @@
         
         .dark-mode #changelogContent::-webkit-scrollbar-thumb:hover {
             background: #888;
+        }
+
+        /* 额外的移动端模态框背景样式 */
+        @media (max-width: 768px) {
+            .modal-backdrop {
+                opacity: 0.5 !important;
+                background-color: rgba(0, 0, 0, 0.3) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                z-index: 1040 !important;
+            }
+            
+            .modal {
+                z-index: 1050 !important;
+            }
+            
+            /* 确保内容在模态框打开时仍然可见 */
+            .container-fluid, .header, .footer, .modules-grid {
+                transition: filter 0.3s ease;
+            }
+            
+            /* 模态框打开时的背景样式 */
+            body.modal-open .container-fluid,
+            body.modal-open .header,
+            body.modal-open .footer,
+            body.modal-open .modules-grid {
+                /* 确保背景内容可见但不可交互 */
+                filter: none !important;
+                -webkit-filter: none !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            /* 适配暗色主题 */
+            [data-bs-theme="dark"] .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5) !important;
+            }
+            
+            /* 确保模态框内部元素可点击 */
+            .modal-dialog, 
+            .modal-content, 
+            .modal-header, 
+            .modal-body, 
+            .modal-footer,
+            .modal-header .btn-close,
+            .modal-footer .btn {
+                z-index: auto !important;
+                pointer-events: auto !important;
+            }
         }
     </style>
 </head>
@@ -2906,6 +2981,41 @@
             if (savedTheme) {
                 document.documentElement.setAttribute('data-bs-theme', savedTheme);
                 icon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+            }
+            
+            // 增强模态框的关闭功能
+            const changelogModalEl = document.getElementById('changelogModal');
+            if (changelogModalEl) {
+                // 使用Bootstrap的Modal对象增强模态框行为
+                const modal = new bootstrap.Modal(changelogModalEl);
+                
+                // 添加模态框事件监听
+                changelogModalEl.addEventListener('shown.bs.modal', function() {
+                    // 确保在移动设备上模态框打开时背景可见
+                    if (window.innerWidth <= 768) {
+                        document.querySelectorAll('.modules-grid, .search-section, .header, .footer').forEach(el => {
+                            el.style.visibility = 'visible';
+                            el.style.opacity = '1';
+                        });
+                    }
+                });
+                
+                // 确保关闭按钮可以正常工作
+                const closeButtons = changelogModalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+                closeButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        modal.hide();
+                    });
+                });
+                
+                // 点击模态框外部区域关闭模态框
+                changelogModalEl.addEventListener('click', function(e) {
+                    if (e.target === changelogModalEl) {
+                        modal.hide();
+                    }
+                });
             }
 
             // 初始加载模块数据
@@ -3690,6 +3800,15 @@
             // 保存当前滚动位置，避免页面跳动
             const scrollY = window.scrollY;
             document.body.style.top = `-${scrollY}px`;
+            
+            // 保存背景可见状态
+            if (window.innerWidth <= 768) {
+                document.querySelectorAll('.modules-grid, .search-section, .header, .footer').forEach(el => {
+                    el.style.visibility = 'visible';
+                    el.style.opacity = '1';
+                    el.style.filter = 'none';
+                });
+            }
             
             // 显示模态框
             changelogModal.show();
